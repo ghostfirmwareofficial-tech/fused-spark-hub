@@ -32,9 +32,9 @@ export default function Navbar() {
   const userProfile = null;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-fused-purple/20">
+    <nav className="fixed top-4 left-4 right-4 z-50 glass rounded-2xl border border-fused-purple/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
             <img 
@@ -46,7 +46,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-xl rounded-xl p-1 border border-white/10">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -54,8 +54,8 @@ export default function Navbar() {
                 className={cn(
                   "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300",
                   location.pathname === item.path
-                    ? "nav-active"
-                    : "nav-inactive"
+                    ? "bg-fused-purple/30 text-fused-purple border border-fused-purple/30"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/10"
                 )}
               >
                 <item.icon className="w-4 h-4" />
@@ -65,11 +65,11 @@ export default function Navbar() {
           </div>
 
           {/* User Section */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
             {isAuthenticated && userProfile ? (
               <>
                 {/* Points Display */}
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
                   <Zap className="w-4 h-4 text-yellow-400" />
                   <span className="font-semibold text-sm">0</span>
                 </div>
@@ -77,7 +77,7 @@ export default function Navbar() {
                 {/* Profile */}
                 <Link
                   to="/profile"
-                  className="flex items-center gap-3 px-3 py-1.5 rounded-lg glass-hover transition-all duration-300"
+                  className="flex items-center gap-3 px-3 py-1.5 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 hover:bg-white/10 hover:border-fused-purple/30 transition-all duration-300"
                 >
                   <div className="w-8 h-8 rounded-full bg-fused-purple/30 flex items-center justify-center border border-fused-purple/50">
                     <User className="w-4 h-4 text-fused-purple" />
@@ -92,7 +92,7 @@ export default function Navbar() {
                 >
                   Log In
                 </Button>
-                <Button className="bg-gradient-to-r from-fused-purple to-fused-pink hover:opacity-90 text-foreground">
+                <Button variant="default">
                   Join Now
                 </Button>
               </div>
@@ -116,7 +116,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass border-t border-fused-purple/20"
+            className="md:hidden bg-background/80 backdrop-blur-xl border-t border-white/10 rounded-b-2xl"
           >
             <div className="px-4 py-4 space-y-2">
               {navItems.map((item) => (
@@ -125,10 +125,10 @@ export default function Navbar() {
                   to={item.path}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
+                    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
                     location.pathname === item.path
-                      ? "nav-active"
-                      : "nav-inactive"
+                      ? "bg-fused-purple/20 text-fused-purple border border-fused-purple/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/10"
                   )}
                 >
                   <item.icon className="w-5 h-5" />
@@ -137,7 +137,8 @@ export default function Navbar() {
               ))}
 
               <Button
-                className="w-full bg-gradient-to-r from-fused-purple to-fused-pink text-foreground mt-4"
+                variant="default"
+                className="w-full mt-4"
               >
                 Join Fused Up
               </Button>
