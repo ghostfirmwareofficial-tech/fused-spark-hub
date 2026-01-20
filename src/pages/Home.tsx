@@ -65,7 +65,7 @@ export default function Home() {
         </video>
         
         {/* Overlay */}
-        <div className="video-overlay" />
+        
         
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 text-center">
