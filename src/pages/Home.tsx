@@ -56,17 +56,9 @@ const socialLinks = [{
   url: 'https://www.instagram.com/fusedupesports'
 }];
 export default function Home() {
-  return <div className="relative">
-      {/* Hero Section with Video Background */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Video Background */}
-        <video autoPlay muted loop playsInline className="video-bg">
-          <source src="/videos/hero-bg.mp4" type="video/mp4" />
-        </video>
-        
-        {/* Overlay */}
-        
-        
+  return <div className="relative -mt-24">
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 text-center">
           <motion.div initial={{

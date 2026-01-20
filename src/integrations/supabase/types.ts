@@ -14,7 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          banner_url: string | null
+          bio: string | null
+          created_at: string
+          current_streak: number
+          discord_username: string | null
+          equipped_items: Json | null
+          fused_points: number
+          id: string
+          ign: string
+          is_verified: boolean
+          last_check_in: string | null
+          longest_streak: number
+          purchased_items: string[] | null
+          rank: string
+          role: string
+          social_links: Json | null
+          total_likes_received: number
+          total_points_earned: number
+          total_posts: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          banner_url?: string | null
+          bio?: string | null
+          created_at?: string
+          current_streak?: number
+          discord_username?: string | null
+          equipped_items?: Json | null
+          fused_points?: number
+          id?: string
+          ign: string
+          is_verified?: boolean
+          last_check_in?: string | null
+          longest_streak?: number
+          purchased_items?: string[] | null
+          rank?: string
+          role?: string
+          social_links?: Json | null
+          total_likes_received?: number
+          total_points_earned?: number
+          total_posts?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          banner_url?: string | null
+          bio?: string | null
+          created_at?: string
+          current_streak?: number
+          discord_username?: string | null
+          equipped_items?: Json | null
+          fused_points?: number
+          id?: string
+          ign?: string
+          is_verified?: boolean
+          last_check_in?: string | null
+          longest_streak?: number
+          purchased_items?: string[] | null
+          rank?: string
+          role?: string
+          social_links?: Json | null
+          total_likes_received?: number
+          total_points_earned?: number
+          total_posts?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

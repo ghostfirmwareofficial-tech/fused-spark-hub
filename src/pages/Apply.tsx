@@ -15,7 +15,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import GlassCard from '@/components/ui/GlassCard';
-import VideoBackground from '@/components/ui/VideoBackground';
 import { cn } from '@/lib/utils';
 
 type TeamType = 'Competitive' | 'Creative' | 'Content' | 'Community' | null;
@@ -96,9 +95,8 @@ export default function Apply() {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4 relative">
-      <VideoBackground opacity={0.2} />
-      <div className="max-w-3xl mx-auto relative z-10">
+    <div className="min-h-screen py-8 px-4">
+      <div className="max-w-3xl mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
