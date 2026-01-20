@@ -60,7 +60,7 @@ export default function Home() {
       {/* Hero Section with Video Background */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Video Background */}
-        <video autoPlay loop playsInline className="video-bg">
+        <video autoPlay muted loop playsInline className="video-bg">
           <source src="/videos/hero-bg.mp4" type="video/mp4" />
         </video>
         
