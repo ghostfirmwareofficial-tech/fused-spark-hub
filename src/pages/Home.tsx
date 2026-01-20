@@ -78,7 +78,6 @@ export default function Home() {
         <video
           autoPlay
           loop
-          muted
           playsInline
           className="video-bg"
         >
@@ -121,7 +120,8 @@ export default function Home() {
               <Link to="/apply">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-fused-purple to-fused-pink hover:opacity-90 text-foreground px-8 py-6 text-lg glow"
+                  variant="default"
+                  className="px-8 py-6 text-lg"
                 >
                   <Gamepad2 className="w-5 h-5 mr-2" />
                   Join the Team
@@ -130,8 +130,8 @@ export default function Home() {
               <Link to="/feed">
                 <Button 
                   size="lg" 
-                  variant="outline"
-                  className="border-fused-purple/50 text-foreground hover:bg-fused-purple/20 px-8 py-6 text-lg"
+                  variant="glass"
+                  className="px-8 py-6 text-lg"
                 >
                   Explore Community
                   <ChevronRight className="w-5 h-5 ml-2" />
