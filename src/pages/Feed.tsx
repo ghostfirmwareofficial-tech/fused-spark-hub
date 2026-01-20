@@ -17,7 +17,6 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import GlassCard from '@/components/ui/GlassCard';
 import RankBadge from '@/components/ui/RankBadge';
-import VideoBackground from '@/components/ui/VideoBackground';
 
 // Mock posts data
 const mockPosts = [
@@ -77,9 +76,8 @@ export default function Feed() {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4 relative">
-      <VideoBackground opacity={0.2} />
-      <div className="max-w-3xl mx-auto relative z-10">
+    <div className="min-h-screen py-8 px-4">
+      <div className="max-w-3xl mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

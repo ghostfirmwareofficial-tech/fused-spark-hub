@@ -13,7 +13,6 @@ import {
 import { Button } from '@/components/ui/button';
 import GlassCard from '@/components/ui/GlassCard';
 import PointsDisplay from '@/components/ui/PointsDisplay';
-import VideoBackground from '@/components/ui/VideoBackground';
 import { cn } from '@/lib/utils';
 
 type Category = 'all' | 'clan_tag' | 'badge' | 'nameplate' | 'boost' | 'background';
@@ -120,9 +119,8 @@ export default function Shop() {
     : mockItems.filter(item => item.category === activeCategory);
 
   return (
-    <div className="min-h-screen py-8 px-4 relative">
-      <VideoBackground opacity={0.15} />
-      <div className="max-w-6xl mx-auto relative z-10">
+    <div className="min-h-screen py-8 px-4">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
