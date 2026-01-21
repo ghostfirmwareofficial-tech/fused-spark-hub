@@ -6,9 +6,10 @@ interface VideoBackgroundProps {
   showAudioToggle?: boolean;
 }
 
-// Singleton pattern - video element stored in a global variable outside React
+// Singleton pattern - ensure only ONE video element exists globally
 let sharedVideoElement: HTMLVideoElement | null = null;
-let sharedMuted = true; // Start muted to comply with autoplay policies
+let sharedMuted = false; // Start unmuted - user can mute if needed
+let videoInitialized = false;
 
 function getOrCreateVideo(): HTMLVideoElement {
   if (!sharedVideoElement) {
@@ -19,8 +20,6 @@ function getOrCreateVideo(): HTMLVideoElement {
     sharedVideoElement.muted = sharedMuted;
     sharedVideoElement.autoplay = true;
     sharedVideoElement.className = 'absolute w-full h-full object-cover';
-    // Start playing immediately
-    sharedVideoElement.play().catch(() => {});
   }
   return sharedVideoElement;
 }
@@ -28,29 +27,42 @@ function getOrCreateVideo(): HTMLVideoElement {
 export default function VideoBackground({ opacity = 0.3, showAudioToggle = false }: VideoBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMuted, setIsMuted] = useState(sharedMuted);
-  const mountedRef = useRef(false);
 
   useEffect(() => {
-    // Prevent double-mount in StrictMode from creating issues
-    if (mountedRef.current) return;
-    mountedRef.current = true;
-
-    const video = getOrCreateVideo();
-    
-    // Only append if not already in this container
-    if (containerRef.current && video.parentElement !== containerRef.current) {
-      // Remove from previous parent if exists
-      if (video.parentElement) {
-        video.parentElement.removeChild(video);
+    // Guard against multiple initializations
+    if (videoInitialized) {
+      const video = getOrCreateVideo();
+      // Just move the existing video to this container
+      if (containerRef.current && video.parentElement !== containerRef.current) {
+        containerRef.current.insertBefore(video, containerRef.current.firstChild);
       }
-      containerRef.current.insertBefore(video, containerRef.current.firstChild);
+      setIsMuted(video.muted);
+      return;
     }
 
-    // Sync muted state
+    videoInitialized = true;
+    const video = getOrCreateVideo();
+    
+    if (containerRef.current) {
+      containerRef.current.insertBefore(video, containerRef.current.firstChild);
+      
+      // Try to play with audio - browsers may block this
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay with audio blocked, try muted
+          video.muted = true;
+          sharedMuted = true;
+          setIsMuted(true);
+          video.play().catch(() => {});
+        });
+      }
+    }
+
     setIsMuted(video.muted);
 
     return () => {
-      mountedRef.current = false;
+      // Don't destroy on unmount - keep playing
     };
   }, []);
 
@@ -60,24 +72,25 @@ export default function VideoBackground({ opacity = 0.3, showAudioToggle = false
     video.muted = sharedMuted;
     setIsMuted(sharedMuted);
     
-    // If unmuting, ensure video is playing
-    if (!sharedMuted) {
-      video.play().catch(() => {});
-    }
+    // Ensure video is playing
+    video.play().catch(() => {});
   };
 
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
       <div ref={containerRef} className="absolute inset-0" />
+      {/* Enhanced gradient overlay for depth */}
       <div 
-        className="absolute inset-0 bg-background" 
-        style={{ opacity: 1 - opacity }}
+        className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background/90" 
+        style={{ opacity: 1 - opacity + 0.2 }}
       />
+      {/* Radial vignette for cinematic effect */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_70%)] opacity-60" />
       
       {showAudioToggle && (
         <button
           onClick={toggleMute}
-          className="fixed bottom-6 right-6 z-50 p-3 rounded-full glass hover:bg-white/10 transition-colors pointer-events-auto"
+          className="fixed bottom-6 right-6 z-50 p-3 rounded-full glass hover:bg-white/10 transition-all duration-300 pointer-events-auto hover:scale-110 active:scale-95"
           aria-label={isMuted ? 'Unmute' : 'Mute'}
         >
           {isMuted ? (
