@@ -25,7 +25,8 @@ function getSharedVideo(): HTMLVideoElement {
 }
 
 export default function VideoBackground({ opacity = 0.3, showAudioToggle = false }: VideoBackgroundProps) {
-  const containerRef = useRef<HTMLDivElemfalse);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     const video = getSharedVideo();
