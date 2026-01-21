@@ -36,6 +36,10 @@ export default function VideoBackground({ opacity = 0.3, showAudioToggle = false
         video.currentTime = sharedCurrentTime;
       }
       containerRef.current.insertBefore(video, containerRef.current.firstChild);
+      
+      // Play video and unmute for audio
+      video.muted = false;
+      setIsMuted(false);
       video.play().catch(() => {});
     }
 
