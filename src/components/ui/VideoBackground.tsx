@@ -58,6 +58,10 @@ export default function VideoBackground({ opacity = 0.3, showAudioToggle = false
     const video = getSharedVideo();
     video.muted = !video.muted;
     setIsMuted(video.muted);
+    // Ensure video is playing when unmuting
+    if (!video.muted) {
+      video.play().catch(() => {});
+    }
   };
 
   return (
