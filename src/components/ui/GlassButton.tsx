@@ -19,7 +19,7 @@ const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>(
     height = 180,
     variant = 'default',
   }, ref) => {
-    const feImageRef = useRef<SVGImageElement>(null);
+    const feImageRef = useRef<SVGFEImageElement>(null);
 
     useEffect(() => {
       const fetchAndSetMapImage = async () => {

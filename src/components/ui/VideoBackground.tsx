@@ -6,58 +6,64 @@ interface VideoBackgroundProps {
   showAudioToggle?: boolean;
 }
 
-// Create a singleton video element that persists across route changes
+// Singleton pattern - video element stored in a global variable outside React
 let sharedVideoElement: HTMLVideoElement | null = null;
-let sharedCurrentTime = 0;
+let sharedMuted = true; // Start muted to comply with autoplay policies
 
-function getSharedVideo(): HTMLVideoElement {
+function getOrCreateVideo(): HTMLVideoElement {
   if (!sharedVideoElement) {
     sharedVideoElement = document.createElement('video');
     sharedVideoElement.src = '/videos/hero-bg.mp4';
     sharedVideoElement.loop = true;
     sharedVideoElement.playsInline = true;
-    sharedVideoElement.muted = false;
+    sharedVideoElement.muted = sharedMuted;
     sharedVideoElement.autoplay = true;
     sharedVideoElement.className = 'absolute w-full h-full object-cover';
+    // Start playing immediately
+    sharedVideoElement.play().catch(() => {});
   }
   return sharedVideoElement;
 }
 
 export default function VideoBackground({ opacity = 0.3, showAudioToggle = false }: VideoBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(sharedMuted);
+  const mountedRef = useRef(false);
 
   useEffect(() => {
-    const video = getSharedVideo();
+    // Prevent double-mount in StrictMode from creating issues
+    if (mountedRef.current) return;
+    mountedRef.current = true;
+
+    const video = getOrCreateVideo();
     
-    if (containerRef.current && !containerRef.current.contains(video)) {
-      // Restore the current time from when we left
-      if (sharedCurrentTime > 0) {
-        video.currentTime = sharedCurrentTime;
+    // Only append if not already in this container
+    if (containerRef.current && video.parentElement !== containerRef.current) {
+      // Remove from previous parent if exists
+      if (video.parentElement) {
+        video.parentElement.removeChild(video);
       }
       containerRef.current.insertBefore(video, containerRef.current.firstChild);
-      video.play().catch(() => {});
     }
 
-    // Save current time periodically
-    const interval = setInterval(() => {
-      if (video) {
-        sharedCurrentTime = video.currentTime;
-      }
-    }, 100);
+    // Sync muted state
+    setIsMuted(video.muted);
 
     return () => {
-      clearInterval(interval);
-      if (video) {
-        sharedCurrentTime = video.currentTime;
-      }
+      mountedRef.current = false;
     };
   }, []);
 
   const toggleMute = () => {
-    const video = getSharedVideo();
-    video.muted = !video.muted;
-    setIsMuted(video.muted);
+    const video = getOrCreateVideo();
+    sharedMuted = !sharedMuted;
+    video.muted = sharedMuted;
+    setIsMuted(sharedMuted);
+    
+    // If unmuting, ensure video is playing
+    if (!sharedMuted) {
+      video.play().catch(() => {});
+    }
   };
 
   return (
