@@ -16,16 +16,16 @@ function getSharedVideo(): HTMLVideoElement {
     sharedVideoElement.src = '/videos/hero-bg.mp4';
     sharedVideoElement.loop = true;
     sharedVideoElement.playsInline = true;
-    sharedVideoElement.muted = true;
+    sharedVideoElement.muted = false; // Start unmuted for audio
     sharedVideoElement.autoplay = true;
     sharedVideoElement.className = 'absolute w-full h-full object-cover';
+    sharedVideoElement.controls = false;
   }
   return sharedVideoElement;
 }
 
 export default function VideoBackground({ opacity = 0.3, showAudioToggle = false }: VideoBackgroundProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
+  const containerRef = useRef<HTMLDivElemfalse);
 
   useEffect(() => {
     const video = getSharedVideo();
@@ -37,9 +37,16 @@ export default function VideoBackground({ opacity = 0.3, showAudioToggle = false
       }
       containerRef.current.insertBefore(video, containerRef.current.firstChild);
       
-      // Play video and unmute for audio
+      // Ensure autoplay and audio
       video.muted = false;
       setIsMuted(false);
+      
+      // Trigger play with user gesture context
+      setTimeout(() => {
+        video.play().catch((error) => {
+          console.error('Video autoplay failed:', error);
+        });
+      }, 100
       video.play().catch(() => {});
     }
 
