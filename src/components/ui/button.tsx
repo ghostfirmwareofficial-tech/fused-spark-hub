@@ -15,7 +15,7 @@ const buttonVariants = cva(
         secondary: "bg-white/10 backdrop-blur-xl border border-white/10 text-foreground hover:bg-white/20",
         ghost: "hover:bg-white/10 hover:text-foreground backdrop-blur-sm",
         link: "text-fused-purple underline-offset-4 hover:underline",
-        glass: "relative border-[1px] border-white/30 text-white backdrop-blur-md hover:border-white/50 hover:bg-white/10 transition-all duration-300 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]",
+        glass: "bg-white/5 backdrop-blur-xl border border-white/20 text-foreground hover:bg-white/10 hover:border-fused-purple/30 shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
       },
       size: {
         default: "h-10 px-4 py-2",

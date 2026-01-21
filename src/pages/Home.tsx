@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Trophy, Users, Zap, Target, ChevronRight, Flame, Crown, Star, Gamepad2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import GlassCard from '@/components/ui/GlassCard';
-import GlassButton from '@/components/ui/GlassButton';
 const features = [{
   icon: Trophy,
   title: 'Compete & Rise',
@@ -87,14 +86,16 @@ export default function Home() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/apply">
-                <GlassButton width={280} height={120} variant="default">
+                <Button size="lg" variant="default" className="px-8 py-6 text-lg">
+                  <Gamepad2 className="w-5 h-5 mr-2" />
                   Join the Team
-                </GlassButton>
+                </Button>
               </Link>
               <Link to="/feed">
-                <GlassButton width={280} height={120} variant="secondary">
-                  Explore
-                </GlassButton>
+                <Button size="lg" variant="glass" className="px-8 py-6 text-lg">
+                  Explore Community
+                  <ChevronRight className="w-5 h-5 ml-2" />
+                </Button>
               </Link>
             </div>
           </motion.div>
