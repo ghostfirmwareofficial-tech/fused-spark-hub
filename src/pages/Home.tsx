@@ -182,82 +182,40 @@ export default function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => <motion.div key={feature.title} initial={{
-              opacity: 0,
-              y: 20
-            }} whileInView={{
-              opacity: 1,
-              y: 0
-            }} viewport={{
-              once: true
-            }} transition={{
-              delay: index * 0.1
-            }} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-                <GlassCard className="p-6 h-full hover-glow group" glow>
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-fused-purple to-fused-pink flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-fused-purple/20">
-                    <feature.icon className="w-7 h-7 text-foreground" />
+            {features.map((feature, index) => (
+              <motion.div 
+                key={feature.title} 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                {/* Creative card with angled accent */}
+                <div className="group relative h-full">
+                  {/* Angled background accent */}
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-fused-purple to-fused-pink rounded-2xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
+                  
+                  <div className="relative h-full p-6 rounded-2xl bg-card/80 backdrop-blur-sm border border-white/10 overflow-hidden">
+                    {/* Diagonal stripe accent */}
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-fused-purple/20 to-transparent" />
+                    
+                    {/* Icon with hexagonal feel */}
+                    <div className="relative w-14 h-14 mb-4">
+                      <div className="absolute inset-0 bg-gradient-to-br from-fused-purple to-fused-pink rounded-xl rotate-3" />
+                      <div className="absolute inset-0.5 bg-card rounded-xl rotate-3 flex items-center justify-center">
+                        <feature.icon className="w-6 h-6 text-fused-purple" />
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold mb-2 group-hover:text-fused-purple transition-colors">{feature.title}</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+                    
+                    {/* Bottom accent line */}
+                    <div className="absolute bottom-0 left-6 right-6 h-0.5 bg-gradient-to-r from-fused-purple/50 via-fused-pink/50 to-transparent" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2 group-hover:text-fused-purple transition-colors">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
-                </GlassCard>
-              </motion.div>)}
-          </div>
-        </div>
-      </section>
-
-      {/* Team Tiers Section */}
-      <section className="py-24 px-4 relative">
-        {/* Section background accent */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-fused-purple/5 to-transparent pointer-events-none" />
-        
-        <div className="max-w-6xl mx-auto relative">
-          <motion.div initial={{
-            opacity: 0,
-            y: 20
-          }} whileInView={{
-            opacity: 1,
-            y: 0
-          }} viewport={{
-            once: true
-          }} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Competitive <span className="text-gradient-animated">Tiers</span>
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              We have spots for players at every level. Find your place and level up.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {teamTiers.map((tier, index) => <motion.div key={tier.name} initial={{
-              opacity: 0,
-              y: 20
-            }} whileInView={{
-              opacity: 1,
-              y: 0
-            }} viewport={{
-              once: true
-            }} transition={{
-              delay: index * 0.15
-            }} whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}>
-                <GlassCard className="p-8 text-center h-full relative overflow-hidden hover-glow group" glow>
-                  <div className={`absolute inset-0 bg-gradient-to-br ${tier.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
-                  <div className="relative z-10">
-                    <motion.div 
-                      className={`w-20 h-20 mx-auto rounded-full bg-gradient-to-br ${tier.color} flex items-center justify-center mb-6 shadow-lg`}
-                      whileHover={{ rotate: 360 }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      <tier.icon className="w-10 h-10 text-foreground" />
-                    </motion.div>
-                    <h3 className="text-2xl font-bold mb-2">{tier.name}</h3>
-                    <p className={`text-lg font-semibold mb-4 bg-gradient-to-r ${tier.color} bg-clip-text text-transparent`}>
-                      {tier.prRange}
-                    </p>
-                    <p className="text-muted-foreground">{tier.description}</p>
-                  </div>
-                </GlassCard>
-              </motion.div>)}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -265,15 +223,12 @@ export default function Home() {
       {/* Team Tiers Section */}
       <section className="py-24 px-4 relative">
         <div className="max-w-6xl mx-auto">
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} viewport={{
-          once: true
-        }} className="text-center mb-16">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Competitive <span className="gradient-text">Tiers</span>
             </h2>
@@ -283,31 +238,53 @@ export default function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {teamTiers.map((tier, index) => <motion.div key={tier.name} initial={{
-            opacity: 0,
-            y: 20
-          }} whileInView={{
-            opacity: 1,
-            y: 0
-          }} viewport={{
-            once: true
-          }} transition={{
-            delay: index * 0.15
-          }}>
-                <GlassCard className="p-8 text-center h-full relative overflow-hidden" glow>
-                  <div className={`absolute inset-0 bg-gradient-to-br ${tier.color} opacity-5`} />
-                  <div className="relative z-10">
-                    <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${tier.color} flex items-center justify-center mb-6`}>
-                      <tier.icon className="w-8 h-8 text-foreground" />
+            {teamTiers.map((tier, index) => (
+              <motion.div 
+                key={tier.name} 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.15 }}
+              >
+                {/* Tier card with unique shape */}
+                <div className="group relative">
+                  {/* Outer glow on hover */}
+                  <div className={`absolute -inset-1 bg-gradient-to-br ${tier.color} rounded-3xl opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-500`} />
+                  
+                  <div className="relative p-8 rounded-3xl bg-card/60 backdrop-blur-md border border-white/10 text-center overflow-hidden">
+                    {/* Top decorative bar */}
+                    <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r ${tier.color} rounded-b-full`} />
+                    
+                    {/* Background pattern */}
+                    <div className="absolute inset-0 opacity-5">
+                      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-gradient-to-br ${tier.color} rounded-full blur-3xl`} />
                     </div>
+                    
+                    {/* Icon container with ring */}
+                    <div className="relative mx-auto w-24 h-24 mb-6">
+                      <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${tier.color} opacity-20 group-hover:opacity-40 transition-opacity`} />
+                      <div className={`absolute inset-2 rounded-full bg-gradient-to-br ${tier.color} flex items-center justify-center`}>
+                        <tier.icon className="w-10 h-10 text-foreground drop-shadow-lg" />
+                      </div>
+                      {/* Orbiting dot */}
+                      <div className="absolute inset-0 animate-[spin_8s_linear_infinite]">
+                        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-gradient-to-r ${tier.color}`} />
+                      </div>
+                    </div>
+                    
                     <h3 className="text-2xl font-bold mb-2">{tier.name}</h3>
                     <p className={`text-lg font-semibold mb-4 bg-gradient-to-r ${tier.color} bg-clip-text text-transparent`}>
                       {tier.prRange}
                     </p>
                     <p className="text-muted-foreground">{tier.description}</p>
+                    
+                    {/* Bottom corners */}
+                    <div className={`absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 rounded-bl-3xl border-current opacity-30 bg-gradient-to-r ${tier.color} bg-clip-border`} style={{ borderColor: 'currentColor' }} />
+                    <div className={`absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 rounded-br-3xl opacity-30`} />
                   </div>
-                </GlassCard>
-              </motion.div>)}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -315,56 +292,77 @@ export default function Home() {
       {/* Sponsor Section */}
       <section className="py-24 px-4 relative">
         <div className="max-w-4xl mx-auto">
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} viewport={{
-          once: true
-        }}>
-            <GlassCard className="p-8 md:p-12" glow>
-              <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="flex-shrink-0">
-                  <img src="/images/dubby-banner.png" alt="DUBBY" className="w-48 md:w-64 rounded-xl" />
-                </div>
-                <div className="text-center md:text-left">
-                  <p className="text-fused-pink font-semibold mb-2">Official Partner</p>
-                  <h3 className="text-3xl font-bold mb-4">Fuel Your Grind</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Get 10% off your DUBBY order and stay energized for those late-night sessions.
-                  </p>
-                  <a href="https://www.dubby.gg/discount/FusedUp?ref__=rnkmqges" target="_blank" rel="noopener noreferrer">
-                    <Button className="bg-gradient-to-r from-fused-purple to-fused-pink hover:opacity-90 text-foreground">
-                      Use Code: FUSEDUP
-                      <ChevronRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </a>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            {/* Sponsor card with frame design */}
+            <div className="relative">
+              {/* Decorative frame corners */}
+              <div className="absolute -top-2 -left-2 w-12 h-12 border-t-2 border-l-2 border-fused-purple rounded-tl-xl" />
+              <div className="absolute -top-2 -right-2 w-12 h-12 border-t-2 border-r-2 border-fused-pink rounded-tr-xl" />
+              <div className="absolute -bottom-2 -left-2 w-12 h-12 border-b-2 border-l-2 border-fused-pink rounded-bl-xl" />
+              <div className="absolute -bottom-2 -right-2 w-12 h-12 border-b-2 border-r-2 border-fused-purple rounded-br-xl" />
+              
+              <div className="p-8 md:p-12 rounded-2xl bg-card/60 backdrop-blur-md border border-white/10">
+                <div className="flex flex-col md:flex-row items-center gap-8">
+                  <div className="flex-shrink-0 relative">
+                    {/* Image with glow */}
+                    <div className="absolute inset-0 bg-fused-purple/20 blur-xl rounded-xl" />
+                    <img src="/images/dubby-banner.png" alt="DUBBY" className="relative w-48 md:w-64 rounded-xl" />
+                  </div>
+                  <div className="text-center md:text-left">
+                    <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-fused-pink bg-fused-pink/10 rounded-full mb-3">
+                      Official Partner
+                    </span>
+                    <h3 className="text-3xl font-bold mb-4">Fuel Your Grind</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Get 10% off your DUBBY order and stay energized for those late-night sessions.
+                    </p>
+                    <a href="https://www.dubby.gg/discount/FusedUp?ref__=rnkmqges" target="_blank" rel="noopener noreferrer">
+                      <Button className="bg-gradient-to-r from-fused-purple to-fused-pink hover:opacity-90 text-foreground group">
+                        Use Code: FUSEDUP
+                        <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </a>
+                  </div>
                 </div>
               </div>
-            </GlassCard>
+            </div>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-4 border-t border-fused-purple/20">
+      <footer className="py-16 px-4 relative">
+        {/* Footer top border with gradient */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-fused-purple/50 to-transparent" />
+        
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col items-center gap-8">
             <div className="flex items-center gap-3">
               <img src="/images/fused-logo.png" alt="Fused Up" className="w-12 h-12" />
-              <span className="text-2xl font-bold glow-text">FUSED UP</span>
+              <span className="text-2xl font-bold gradient-text">FUSED UP</span>
             </div>
             
             <div className="flex flex-wrap justify-center gap-6">
-              {socialLinks.map(social => <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-fused-purple transition-colors">
+              {socialLinks.map(social => (
+                <a 
+                  key={social.name} 
+                  href={social.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-muted-foreground hover:text-fused-purple transition-colors relative group"
+                >
                   {social.name}
-                </a>)}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-fused-purple group-hover:w-full transition-all duration-300" />
+                </a>
+              ))}
             </div>
             
             <p className="text-muted-foreground text-sm">
-              © 2024 Fused Up Esports. All rights reserved.
+              © 2025 Fused Up Esports. All rights reserved.
             </p>
           </div>
         </div>
