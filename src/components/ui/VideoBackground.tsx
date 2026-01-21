@@ -16,7 +16,7 @@ function getSharedVideo(): HTMLVideoElement {
     sharedVideoElement.src = '/videos/hero-bg.mp4';
     sharedVideoElement.loop = true;
     sharedVideoElement.playsInline = true;
-    sharedVideoElement.muted = true; // Start muted for autoplay
+    sharedVideoElement.muted = false; // Audio enabled by default
     sharedVideoElement.autoplay = true;
     sharedVideoElement.className = 'absolute w-full h-full object-cover';
   }
@@ -25,7 +25,7 @@ function getSharedVideo(): HTMLVideoElement {
 
 export default function VideoBackground({ opacity = 0.3, showAudioToggle = false }: VideoBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     const video = getSharedVideo();
