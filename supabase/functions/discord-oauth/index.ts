@@ -6,9 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Discord OAuth configuration
 const DISCORD_CLIENT_ID = Deno.env.get('DISCORD_CLIENT_ID') || '';
 const DISCORD_CLIENT_SECRET = Deno.env.get('DISCORD_CLIENT_SECRET') || '';
-const DISCORD_REDIRECT_URI = Deno.env.get('DISCORD_REDIRECT_URI') || '';
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -20,23 +20,61 @@ serve(async (req) => {
     const url = new URL(req.url);
     const action = url.searchParams.get('action');
 
+    console.log('Discord OAuth action:', action);
+
     // Get auth URL for Discord OAuth
     if (action === 'get-auth-url') {
+      // Check if Discord is configured
+      if (!DISCORD_CLIENT_ID) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Discord OAuth not configured',
+            configured: false 
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Get the origin from the request for dynamic redirect URI
+      const origin = req.headers.get('origin') || req.headers.get('referer')?.replace(/\/$/, '') || '';
+      const redirectUri = `${origin}/auth/discord/callback`;
+      
       const state = crypto.randomUUID();
-      const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT_URI)}&response_type=code&scope=identify&state=${state}`;
+      const authUrl = new URL('https://discord.com/api/oauth2/authorize');
+      authUrl.searchParams.set('client_id', DISCORD_CLIENT_ID);
+      authUrl.searchParams.set('redirect_uri', redirectUri);
+      authUrl.searchParams.set('response_type', 'code');
+      authUrl.searchParams.set('scope', 'identify');
+      authUrl.searchParams.set('state', state);
+      
+      console.log('Generated auth URL:', authUrl.toString());
+      console.log('Redirect URI:', redirectUri);
       
       return new Response(
-        JSON.stringify({ authUrl, state }),
+        JSON.stringify({ 
+          authUrl: authUrl.toString(), 
+          state,
+          configured: true,
+          redirectUri 
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Exchange code for token and get user info
     if (action === 'callback') {
-      const { code } = await req.json();
+      const body = await req.json();
+      const { code, redirectUri } = body;
+      
+      console.log('Callback received with code:', code ? 'present' : 'missing');
+      console.log('Redirect URI:', redirectUri);
       
       if (!code) {
         throw new Error('No authorization code provided');
+      }
+
+      if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET) {
+        throw new Error('Discord OAuth not configured');
       }
 
       // Exchange code for access token
@@ -50,17 +88,19 @@ serve(async (req) => {
           client_secret: DISCORD_CLIENT_SECRET,
           grant_type: 'authorization_code',
           code,
-          redirect_uri: DISCORD_REDIRECT_URI,
+          redirect_uri: redirectUri,
         }),
       });
 
+      const tokenText = await tokenResponse.text();
+      console.log('Token response status:', tokenResponse.status);
+      
       if (!tokenResponse.ok) {
-        const error = await tokenResponse.text();
-        console.error('Token exchange failed:', error);
-        throw new Error('Failed to exchange code for token');
+        console.error('Token exchange failed:', tokenText);
+        throw new Error('Failed to exchange code for token: ' + tokenText);
       }
 
-      const tokenData = await tokenResponse.json();
+      const tokenData = JSON.parse(tokenText);
       const accessToken = tokenData.access_token;
 
       // Get Discord user info
@@ -71,10 +111,13 @@ serve(async (req) => {
       });
 
       if (!userResponse.ok) {
+        const userError = await userResponse.text();
+        console.error('User fetch failed:', userError);
         throw new Error('Failed to get Discord user info');
       }
 
       const discordUser = await userResponse.json();
+      console.log('Discord user fetched:', discordUser.username);
       
       // Get the Supabase user from the auth header
       const authHeader = req.headers.get('Authorization');
@@ -92,15 +135,21 @@ serve(async (req) => {
       const { data: { user }, error: userError } = await supabase.auth.getUser(token);
       
       if (userError || !user) {
+        console.error('Auth error:', userError);
         throw new Error('Invalid user token');
       }
+
+      // Format username (Discord removed discriminators for most users)
+      const discordUsername = discordUser.discriminator && discordUser.discriminator !== '0' 
+        ? `${discordUser.username}#${discordUser.discriminator}`
+        : discordUser.username;
 
       // Update the user's profile with Discord info
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
           discord_id: discordUser.id,
-          discord_username: `${discordUser.username}${discordUser.discriminator !== '0' ? '#' + discordUser.discriminator : ''}`,
+          discord_username: discordUsername,
         })
         .eq('user_id', user.id);
 
@@ -109,11 +158,13 @@ serve(async (req) => {
         throw new Error('Failed to update profile');
       }
 
+      console.log('Profile updated successfully for user:', user.id);
+
       return new Response(
         JSON.stringify({ 
           success: true, 
-          username: discordUser.username,
-          discriminator: discordUser.discriminator,
+          username: discordUsername,
+          id: discordUser.id,
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -157,7 +208,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ error: 'Invalid action' }),
+      JSON.stringify({ error: 'Invalid action. Use: get-auth-url, callback, or disconnect' }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

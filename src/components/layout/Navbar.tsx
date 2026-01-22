@@ -12,11 +12,13 @@ import {
   X,
   Zap,
   LogOut,
+  Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
+import { useUserRole } from '@/hooks/useUserRole';
 import AuthModal from '@/components/auth/AuthModal';
 
 const navItems = [
@@ -34,6 +36,7 @@ export default function Navbar() {
   const location = useLocation();
   const { user, signOut, loading } = useAuth();
   const { data: profile } = useProfile();
+  const { isAdmin } = useUserRole();
 
   const openAuthModal = (mode: 'login' | 'signup') => {
     setAuthMode(mode);
@@ -83,6 +86,17 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-3">
               {!loading && user && profile ? (
                 <>
+                  {/* Admin Panel Button */}
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-red-500/20 border border-red-500/30 hover:bg-red-500/30 transition-all duration-300"
+                    >
+                      <Shield className="w-4 h-4 text-red-400" />
+                      <span className="text-sm font-medium text-red-400">Admin</span>
+                    </Link>
+                  )}
+
                   {/* Points Display */}
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
                     <Zap className="w-4 h-4 text-yellow-400 fill-yellow-400" />
@@ -197,6 +211,16 @@ export default function Navbar() {
 
                 {user ? (
                   <>
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400"
+                      >
+                        <Shield className="w-5 h-5" />
+                        <span className="font-medium">Admin Panel</span>
+                      </Link>
+                    )}
                     <Link
                       to="/profile"
                       onClick={() => setIsMobileMenuOpen(false)}

@@ -36,22 +36,19 @@ export function useDiscordOAuth() {
 
       const urlData = await response.json();
       
-      if (urlData.error) {
-        // Check if it's a configuration issue
-        if (!urlData.authUrl || urlData.authUrl.includes('client_id=&')) {
-          toast({
-            title: "Discord not configured",
-            description: "Discord OAuth credentials need to be set up. Contact an admin.",
-            variant: "destructive",
-          });
-          setIsConnecting(false);
-          return;
-        }
-        throw new Error(urlData.error);
+      if (urlData.error || !urlData.configured) {
+        toast({
+          title: "Discord not configured",
+          description: "Discord OAuth credentials need to be set up by an admin.",
+          variant: "destructive",
+        });
+        setIsConnecting(false);
+        return;
       }
 
-      // Store state for verification
+      // Store state and redirect URI for verification
       sessionStorage.setItem('discord_oauth_state', urlData.state);
+      sessionStorage.setItem('discord_redirect_uri', urlData.redirectUri);
       
       // Open Discord OAuth in a popup
       const width = 500;
@@ -95,11 +92,12 @@ export function useDiscordOAuth() {
         }
       }, 500);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Discord connect error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to connect Discord account';
       toast({
         title: "Connection failed",
-        description: error.message || "Failed to connect Discord account",
+        description: errorMessage,
         variant: "destructive",
       });
       setIsConnecting(false);
@@ -109,6 +107,7 @@ export function useDiscordOAuth() {
   const handleCallback = async (code: string) => {
     try {
       const session = await supabase.auth.getSession();
+      const redirectUri = sessionStorage.getItem('discord_redirect_uri');
       
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/discord-oauth?action=callback`,
@@ -118,7 +117,7 @@ export function useDiscordOAuth() {
             'Authorization': `Bearer ${session.data.session?.access_token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ code }),
+          body: JSON.stringify({ code, redirectUri }),
         }
       );
 
@@ -133,14 +132,19 @@ export function useDiscordOAuth() {
         description: `Connected as ${data.username}`,
       });
 
+      // Clean up
+      sessionStorage.removeItem('discord_oauth_state');
+      sessionStorage.removeItem('discord_redirect_uri');
+
       // Refresh profile data
       queryClient.invalidateQueries({ queryKey: ['profile'] });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Discord callback error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to complete Discord connection';
       toast({
         title: "Connection failed",
-        description: error.message || "Failed to complete Discord connection",
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -175,11 +179,12 @@ export function useDiscordOAuth() {
       // Refresh profile data
       queryClient.invalidateQueries({ queryKey: ['profile'] });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Discord disconnect error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to disconnect Discord';
       toast({
         title: "Disconnect failed",
-        description: error.message || "Failed to disconnect Discord",
+        description: errorMessage,
         variant: "destructive",
       });
     }

@@ -24,14 +24,15 @@ import BubbleCard from '@/components/ui/BubbleCard';
 import RankBadge from '@/components/ui/RankBadge';
 import PointsDisplay from '@/components/ui/PointsDisplay';
 import GamingAccountButton from '@/components/ui/GamingAccountButton';
+import GamingConnectionModal from '@/components/profile/GamingConnectionModal';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useDailyCheckIn } from '@/hooks/useDailyCheckIn';
 import { useDiscordOAuth } from '@/hooks/useDiscordOAuth';
+import { useGamingAccounts } from '@/hooks/useGamingAccounts';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const RANK_THRESHOLDS = {
@@ -50,13 +51,18 @@ export default function Profile() {
   const { data: profile, isLoading } = useProfile();
   const { isAdmin } = useUserRole();
   const { hasCheckedInToday, currentStreak, checkIn } = useDailyCheckIn();
-  const { connectDiscord, disconnectDiscord, isConnecting } = useDiscordOAuth();
+  const { connectDiscord, disconnectDiscord, isConnecting: isDiscordConnecting } = useDiscordOAuth();
+  const { connectAccount, disconnectAccount, isConnecting: gamingConnecting } = useGamingAccounts();
   const queryClient = useQueryClient();
   
   const [isEditing, setIsEditing] = useState(false);
   const [editedIgn, setEditedIgn] = useState('');
   const [editedBio, setEditedBio] = useState('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [connectionModal, setConnectionModal] = useState<{
+    isOpen: boolean;
+    platform: 'epic' | 'steam' | 'riot';
+  }>({ isOpen: false, platform: 'epic' });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Update profile mutation
@@ -108,18 +114,20 @@ export default function Profile() {
 
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       toast.success('Avatar updated!');
-    } catch (error: any) {
-      toast.error('Failed to upload avatar', { description: error.message });
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error('Failed to upload avatar', { description: errorMessage });
     } finally {
       setUploadingAvatar(false);
     }
   };
 
-  // Gaming account connections (placeholder - would need OAuth)
-  const handleConnectGaming = (platform: string) => {
-    toast.info(`${platform} integration coming soon!`, {
-      description: 'This feature requires OAuth setup with the platform.',
-    });
+  const openConnectionModal = (platform: 'epic' | 'steam' | 'riot') => {
+    setConnectionModal({ isOpen: true, platform });
+  };
+
+  const handleGamingConnect = async (username: string) => {
+    return await connectAccount(connectionModal.platform, username);
   };
 
   if (isLoading || !profile) {
@@ -310,22 +318,22 @@ export default function Profile() {
                 platform="epic"
                 isConnected={!!profile.epic_games_id}
                 username={profile.epic_games_id || undefined}
-                onConnect={() => handleConnectGaming('Epic Games')}
-                onDisconnect={() => {}}
+                onConnect={() => openConnectionModal('epic')}
+                onDisconnect={() => disconnectAccount('epic')}
               />
               <GamingAccountButton
                 platform="steam"
                 isConnected={!!profile.steam_id}
                 username={profile.steam_id || undefined}
-                onConnect={() => handleConnectGaming('Steam')}
-                onDisconnect={() => {}}
+                onConnect={() => openConnectionModal('steam')}
+                onDisconnect={() => disconnectAccount('steam')}
               />
               <GamingAccountButton
                 platform="riot"
                 isConnected={!!profile.riot_id}
                 username={profile.riot_id || undefined}
-                onConnect={() => handleConnectGaming('Riot Games')}
-                onDisconnect={() => {}}
+                onConnect={() => openConnectionModal('riot')}
+                onDisconnect={() => disconnectAccount('riot')}
               />
               <GamingAccountButton
                 platform="discord"
@@ -333,7 +341,7 @@ export default function Profile() {
                 username={profile.discord_username || undefined}
                 onConnect={connectDiscord}
                 onDisconnect={disconnectDiscord}
-                isLoading={isConnecting}
+                isLoading={isDiscordConnecting}
               />
             </div>
           </BubbleCard>
@@ -397,6 +405,15 @@ export default function Profile() {
           ))}
         </motion.div>
       </div>
+
+      {/* Gaming Connection Modal */}
+      <GamingConnectionModal
+        isOpen={connectionModal.isOpen}
+        onClose={() => setConnectionModal({ ...connectionModal, isOpen: false })}
+        platform={connectionModal.platform}
+        onConnect={handleGamingConnect}
+        isLoading={gamingConnecting === connectionModal.platform}
+      />
     </div>
   );
 }
