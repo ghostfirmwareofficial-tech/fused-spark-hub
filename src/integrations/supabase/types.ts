@@ -38,6 +38,48 @@ export type Database = {
         }
         Relationships: []
       }
+      posts: {
+        Row: {
+          comments_count: number
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_featured: boolean
+          likes_count: number
+          reposts_count: number
+          updated_at: string
+          user_id: string
+          video_url: string | null
+        }
+        Insert: {
+          comments_count?: number
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          likes_count?: number
+          reposts_count?: number
+          updated_at?: string
+          user_id: string
+          video_url?: string | null
+        }
+        Update: {
+          comments_count?: number
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          likes_count?: number
+          reposts_count?: number
+          updated_at?: string
+          user_id?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
