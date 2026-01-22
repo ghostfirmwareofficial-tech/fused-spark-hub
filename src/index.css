@@ -4,23 +4,23 @@
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
+    --background: 220 25% 4%;
     --foreground: 0 0% 100%;
 
-    --card: 0 0% 7%;
+    --card: 220 25% 7%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 7%;
+    --popover: 220 25% 7%;
     --popover-foreground: 0 0% 100%;
 
     --primary: 263 70% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 330 81% 60%;
+    --secondary: 220 70% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 240 4% 16%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 220 15% 16%;
+    --muted-foreground: 220 9% 56%;
 
     --accent: 263 70% 50%;
     --accent-foreground: 0 0% 100%;
@@ -28,17 +28,17 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 263 30% 20%;
-    --input: 263 30% 20%;
+    --border: 220 30% 20%;
+    --input: 220 30% 20%;
     --ring: 263 70% 50%;
 
     --radius: 0.75rem;
 
-    /* Custom Fused Up Colors */
+    /* Custom Fused Up Colors - Dark Blue & Purple */
     --fused-purple: 263 70% 66%;
-    --fused-pink: 330 81% 60%;
-    --fused-dark: 0 0% 4%;
-    --fused-surface: 0 0% 7%;
+    --fused-blue: 220 70% 50%;
+    --fused-dark: 220 25% 4%;
+    --fused-surface: 220 25% 7%;
     
     /* Rank Colors */
     --rank-recruit: 0 0% 60%;
@@ -46,7 +46,7 @@
     --rank-challenger: 199 89% 48%;
     --rank-elite: 263 70% 50%;
     --rank-fused-core: 45 93% 47%;
-    --rank-ascended: 330 81% 60%;
+    --rank-ascended: 220 70% 50%;
 
     /* Rarity Colors */
     --rarity-common: 0 0% 60%;
@@ -55,35 +55,35 @@
     --rarity-epic: 263 70% 50%;
     --rarity-legendary: 45 93% 47%;
 
-    --sidebar-background: 0 0% 4%;
+    --sidebar-background: 220 25% 4%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 263 70% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 263 30% 20%;
+    --sidebar-accent: 220 30% 20%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 263 30% 20%;
+    --sidebar-border: 220 30% 20%;
     --sidebar-ring: 263 70% 50%;
   }
 
   .dark {
-    --background: 0 0% 4%;
+    --background: 220 25% 4%;
     --foreground: 0 0% 100%;
-    --card: 0 0% 7%;
+    --card: 220 25% 7%;
     --card-foreground: 0 0% 100%;
-    --popover: 0 0% 7%;
+    --popover: 220 25% 7%;
     --popover-foreground: 0 0% 100%;
     --primary: 263 70% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 330 81% 60%;
+    --secondary: 220 70% 50%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 240 4% 16%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 220 15% 16%;
+    --muted-foreground: 220 9% 56%;
     --accent: 263 70% 50%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 263 30% 20%;
-    --input: 263 30% 20%;
+    --border: 220 30% 20%;
+    --input: 220 30% 20%;
     --ring: 263 70% 50%;
   }
 }
@@ -91,6 +91,11 @@
 @layer base {
   * {
     @apply border-border;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238B5CF6' stroke-width='2'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E") 12 0, auto;
+  }
+
+  a, button, [role="button"], input, select, textarea, .interactive {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='%238B5CF6' stroke='%23fff' stroke-width='1'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E") 14 0, pointer;
   }
 
   body {
@@ -129,13 +134,13 @@
     text-shadow: 0 0 20px hsl(var(--fused-purple) / 0.5);
   }
 
-  .glow-pink {
-    box-shadow: 0 0 30px hsl(var(--fused-pink) / 0.3);
+  .glow-blue {
+    box-shadow: 0 0 30px hsl(var(--fused-blue) / 0.3);
   }
 
-  /* Gradient Text */
+  /* Gradient Text - Now Blue to Purple */
   .gradient-text {
-    @apply bg-gradient-to-r from-fused-purple to-fused-pink bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-fused-blue to-fused-purple bg-clip-text text-transparent;
   }
 
   .gradient-text-gold {
@@ -144,13 +149,13 @@
 
   /* Gradient Backgrounds */
   .gradient-bg {
-    @apply bg-gradient-to-r from-fused-purple to-fused-pink;
+    @apply bg-gradient-to-r from-fused-blue to-fused-purple;
   }
 
   .gradient-border {
     @apply relative;
     background: linear-gradient(var(--background), var(--background)) padding-box,
-                linear-gradient(135deg, hsl(var(--fused-purple)), hsl(var(--fused-pink))) border-box;
+                linear-gradient(135deg, hsl(var(--fused-blue)), hsl(var(--fused-purple))) border-box;
     border: 1px solid transparent;
   }
 
@@ -176,7 +181,7 @@
   }
 
   .rank-ascended {
-    @apply bg-pink-500/20 border-pink-500/30 text-pink-400;
+    @apply bg-blue-600/20 border-blue-600/30 text-blue-400;
   }
 
   /* Rarity Styles */
@@ -221,6 +226,23 @@
 
   .nav-inactive {
     @apply text-muted-foreground hover:text-foreground hover:bg-white/5;
+  }
+
+  /* Interactive Bubble Effect */
+  .bubble-effect {
+    @apply relative overflow-hidden;
+  }
+
+  .bubble-effect::before {
+    content: '';
+    @apply absolute w-0 h-0 rounded-full bg-fused-purple/20 transition-all duration-500 ease-out pointer-events-none;
+    left: var(--mouse-x, 50%);
+    top: var(--mouse-y, 50%);
+    transform: translate(-50%, -50%);
+  }
+
+  .bubble-effect:hover::before {
+    @apply w-[300px] h-[300px];
   }
 
   /* Scrollbar Styling */
@@ -298,9 +320,9 @@
   .text-gradient-animated {
     background: linear-gradient(
       90deg,
+      hsl(var(--fused-blue)),
       hsl(var(--fused-purple)),
-      hsl(var(--fused-pink)),
-      hsl(var(--fused-purple))
+      hsl(var(--fused-blue))
     );
     background-size: 200% auto;
     -webkit-background-clip: text;
@@ -324,7 +346,7 @@
 
   .hover-glow:hover {
     box-shadow: 0 0 40px hsl(var(--fused-purple) / 0.4),
-                0 0 80px hsl(var(--fused-pink) / 0.2);
+                0 0 80px hsl(var(--fused-blue) / 0.2);
   }
 
   .depth-card {
@@ -340,9 +362,19 @@
       135deg,
       hsl(var(--fused-purple) / 0.1) 0%,
       transparent 50%,
-      hsl(var(--fused-pink) / 0.05) 100%
+      hsl(var(--fused-blue) / 0.05) 100%
     );
     transform: translateZ(-10px);
     filter: blur(20px);
+  }
+
+  /* Admin badge */
+  .admin-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/20 border border-red-500/50 text-red-400;
+  }
+
+  /* Online indicator */
+  .online-indicator {
+    @apply w-2 h-2 rounded-full bg-green-500 animate-pulse;
   }
 }

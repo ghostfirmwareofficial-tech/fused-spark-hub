@@ -62,9 +62,9 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Fused Up Custom Colors
+        // Fused Up Custom Colors - Dark Blue & Purple
         "fused-purple": "hsl(var(--fused-purple))",
-        "fused-pink": "hsl(var(--fused-pink))",
+        "fused-blue": "hsl(var(--fused-blue))",
         "fused-dark": "hsl(var(--fused-dark))",
         "fused-surface": "hsl(var(--fused-surface))",
         // Rank Colors
@@ -135,7 +135,7 @@ export default {
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-fused": "linear-gradient(135deg, hsl(var(--fused-purple)), hsl(var(--fused-pink)))",
+        "gradient-fused": "linear-gradient(135deg, hsl(var(--fused-blue)), hsl(var(--fused-purple)))",
       },
     },
   },

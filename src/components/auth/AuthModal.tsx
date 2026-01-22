@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface AuthModalProps {
@@ -13,6 +14,9 @@ interface AuthModalProps {
   onClose: () => void;
   initialMode?: 'login' | 'signup';
 }
+
+// Admin password for role assignment (per user request - note: this is not secure)
+const ADMIN_PASSWORD = 'Fus3d-Upadmin';
 
 export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) {
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
@@ -40,7 +44,21 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         if (error) {
           toast.error(error.message);
         } else {
-          toast.success('Account created! Welcome to Fused Up!');
+          // Check if admin password was used
+          if (password === ADMIN_PASSWORD) {
+            // Get the user that was just created
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+              // Assign admin role
+              await supabase.from('user_roles').insert({
+                user_id: user.id,
+                role: 'admin',
+              });
+              toast.success('Admin account created! Welcome to Fused Up!');
+            }
+          } else {
+            toast.success('Account created! Welcome to Fused Up!');
+          }
           onClose();
         }
       }
@@ -144,7 +162,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-fused-purple to-fused-pink hover:opacity-90 text-foreground py-6"
+                  className="w-full bg-gradient-to-r from-fused-blue to-fused-purple hover:opacity-90 text-foreground py-6"
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
