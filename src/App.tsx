@@ -11,6 +11,7 @@ import Shop from "./pages/Shop";
 import Apply from "./pages/Apply";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
 import DiscordCallback from "./pages/DiscordCallback";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/apply" element={<Apply />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="/auth/discord/callback" element={<DiscordCallback />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
