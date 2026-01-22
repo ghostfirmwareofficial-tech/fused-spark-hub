@@ -11,31 +11,25 @@ export function useDiscordOAuth() {
   const connectDiscord = async () => {
     setIsConnecting(true);
     try {
-      // Get the auth URL from our edge function
-      const { data, error } = await supabase.functions.invoke('discord-oauth', {
-        body: null,
-        headers: {},
-      });
-
-      if (error) {
-        // Check if secrets are not configured
-        if (error.message?.includes('client_id')) {
-          toast({
-            title: "Discord not configured",
-            description: "Discord OAuth credentials need to be set up. Contact an admin.",
-            variant: "destructive",
-          });
-          return;
-        }
-        throw error;
+      const session = await supabase.auth.getSession();
+      if (!session.data.session) {
+        toast({
+          title: "Not logged in",
+          description: "Please log in to connect your Discord account.",
+          variant: "destructive",
+        });
+        setIsConnecting(false);
+        return;
       }
 
       // Get auth URL with action parameter
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/discord-oauth?action=get-auth-url`,
         {
+          method: 'GET',
           headers: {
-            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+            'Authorization': `Bearer ${session.data.session.access_token}`,
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -43,6 +37,16 @@ export function useDiscordOAuth() {
       const urlData = await response.json();
       
       if (urlData.error) {
+        // Check if it's a configuration issue
+        if (!urlData.authUrl || urlData.authUrl.includes('client_id=&')) {
+          toast({
+            title: "Discord not configured",
+            description: "Discord OAuth credentials need to be set up. Contact an admin.",
+            variant: "destructive",
+          });
+          setIsConnecting(false);
+          return;
+        }
         throw new Error(urlData.error);
       }
 
