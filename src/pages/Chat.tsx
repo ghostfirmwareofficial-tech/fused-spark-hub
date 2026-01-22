@@ -11,21 +11,13 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import GlassCard from '@/components/ui/GlassCard';
+import BubbleCard from '@/components/ui/BubbleCard';
 import RankBadge from '@/components/ui/RankBadge';
+import CommunityStats from '@/components/ui/CommunityStats';
+import { useChatMessages, type Channel } from '@/hooks/useChatMessages';
+import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
-
-type Channel = 'general' | 'competitive' | 'content' | 'off-topic';
-
-interface ChatMessage {
-  id: string;
-  channel: Channel;
-  author_ign: string;
-  author_rank: string;
-  author_role: string;
-  content: string;
-  created_date: string;
-}
 
 const channels = [
   { id: 'general' as const, name: 'general', icon: Hash, description: 'General chat for everyone' },
@@ -34,72 +26,24 @@ const channels = [
   { id: 'off-topic' as const, name: 'off-topic', icon: MessageSquare, description: 'Anything goes!' },
 ];
 
-const mockMessages: ChatMessage[] = [
-  {
-    id: '1',
-    channel: 'general',
-    author_ign: 'FusedUp Bot',
-    author_rank: 'Ascended',
-    author_role: 'Admin',
-    content: 'Welcome to the Fused Up chat! Be respectful and have fun 🎮',
-    created_date: new Date(Date.now() - 3600000).toISOString(),
-  },
-  {
-    id: '2',
-    channel: 'general',
-    author_ign: 'ProGamer123',
-    author_rank: 'Challenger',
-    author_role: 'Competitive',
-    content: 'Anyone down for some arena duos?',
-    created_date: new Date(Date.now() - 1800000).toISOString(),
-  },
-  {
-    id: '3',
-    channel: 'general',
-    author_ign: 'StreamerKid',
-    author_rank: 'Grinder',
-    author_role: 'Creator',
-    content: 'Just hit a crazy clip, gonna post it on the feed later!',
-    created_date: new Date(Date.now() - 900000).toISOString(),
-  },
-  {
-    id: '4',
-    channel: 'general',
-    author_ign: 'NewMember',
-    author_rank: 'Recruit',
-    author_role: 'Member',
-    content: 'Hey everyone! Just joined, excited to be here 🙌',
-    created_date: new Date(Date.now() - 300000).toISOString(),
-  },
-];
-
 export default function Chat() {
+  const { user } = useAuth();
+  const { isAdmin } = useUserRole();
   const [activeChannel, setActiveChannel] = useState<Channel>('general');
   const [newMessage, setNewMessage] = useState('');
-  const [messages, setMessages] = useState(mockMessages);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const filteredMessages = messages.filter(m => m.channel === activeChannel);
+  
+  const { messages, isLoading, sendMessage } = useChatMessages(activeChannel);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [filteredMessages]);
+  }, [messages]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
-
-    const newMsg: ChatMessage = {
-      id: Date.now().toString(),
-      channel: activeChannel,
-      author_ign: 'You',
-      author_rank: 'Recruit',
-      author_role: 'Member',
-      content: newMessage,
-      created_date: new Date().toISOString(),
-    };
-
-    setMessages(prev => [...prev, newMsg]);
+    if (!newMessage.trim() || !user) return;
+    
+    sendMessage.mutate(newMessage);
     setNewMessage('');
   };
 
@@ -108,7 +52,7 @@ export default function Chat() {
       'Staff': 'text-red-400',
       'Admin': 'text-red-400',
       'Competitive': 'text-blue-400',
-      'Creator': 'text-pink-400',
+      'Creator': 'text-fused-purple',
       'Member': 'text-muted-foreground'
     };
     return colors[role] || 'text-muted-foreground';
@@ -120,14 +64,17 @@ export default function Chat() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
+          className="mb-6 flex items-center justify-between"
         >
-          <h1 className="text-3xl font-bold mb-2">
-            Community <span className="gradient-text">Chat</span>
-          </h1>
-          <p className="text-muted-foreground">
-            Connect with other members in real-time
-          </p>
+          <div>
+            <h1 className="text-3xl font-bold mb-2">
+              Community <span className="gradient-text">Chat</span>
+            </h1>
+            <p className="text-muted-foreground">
+              Connect with other members in real-time
+            </p>
+          </div>
+          <CommunityStats />
         </motion.div>
 
         <div className="grid lg:grid-cols-[240px_1fr] gap-6 h-[calc(100vh-220px)]">
@@ -137,7 +84,7 @@ export default function Chat() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <GlassCard className="p-4 h-full">
+            <BubbleCard className="p-4 h-full">
               <div className="flex items-center gap-2 mb-4 px-2">
                 <Users className="w-5 h-5 text-fused-purple" />
                 <span className="font-semibold">Channels</span>
@@ -161,18 +108,9 @@ export default function Chat() {
               </div>
 
               <div className="mt-6 pt-6 border-t border-white/10">
-                <a 
-                  href="https://discord.gg/fusedupesports" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  <Button variant="outline" className="w-full border-[#5865F2] text-[#5865F2] hover:bg-[#5865F2]/10">
-                    Join Discord
-                  </Button>
-                </a>
+                <CommunityStats compact className="justify-center" />
               </div>
-            </GlassCard>
+            </BubbleCard>
           </motion.div>
 
           {/* Chat Area */}
@@ -181,7 +119,7 @@ export default function Chat() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <GlassCard className="h-full flex flex-col">
+            <BubbleCard className="h-full flex flex-col">
               {/* Channel Header */}
               <div className="px-6 py-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
@@ -195,50 +133,75 @@ export default function Chat() {
 
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {filteredMessages.map((message) => (
-                  <div key={message.id} className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-fused-purple/30 flex items-center justify-center border border-fused-purple/50 flex-shrink-0">
-                      <span className="text-fused-purple font-semibold text-sm">
-                        {message.author_ign[0]}
-                      </span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold">{message.author_ign}</span>
-                        <RankBadge rank={message.author_rank} size="sm" showLabel={false} />
-                        <span className={cn("text-xs", getRoleColor(message.author_role))}>
-                          {message.author_role}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {format(new Date(message.created_date), 'h:mm a')}
-                        </span>
-                      </div>
-                      <p className="text-muted-foreground mt-1">{message.content}</p>
-                    </div>
+                {isLoading ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="animate-spin w-8 h-8 border-2 border-fused-purple border-t-transparent rounded-full" />
                   </div>
-                ))}
+                ) : messages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                    <MessageSquare className="w-12 h-12 mb-4 opacity-50" />
+                    <p>No messages yet. Be the first to say something!</p>
+                  </div>
+                ) : (
+                  messages.map((message) => (
+                    <div key={message.id} className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-fused-purple/30 flex items-center justify-center border border-fused-purple/50 flex-shrink-0 overflow-hidden">
+                        {message.profiles?.avatar_url ? (
+                          <img 
+                            src={message.profiles.avatar_url} 
+                            alt="" 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-fused-purple font-semibold text-sm">
+                            {message.profiles?.ign?.[0] || '?'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-semibold">{message.profiles?.ign || 'Unknown'}</span>
+                          <RankBadge rank={message.profiles?.rank || 'Recruit'} size="sm" showLabel={false} />
+                          <span className={cn("text-xs", getRoleColor(message.profiles?.role || 'Member'))}>
+                            {message.profiles?.role}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {format(new Date(message.created_at), 'h:mm a')}
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground mt-1">{message.content}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
                 <div ref={messagesEndRef} />
               </div>
 
               {/* Message Input */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-white/10">
-                <div className="flex gap-3">
-                  <Input
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder={`Message #${activeChannel}`}
-                    className="bg-white/5 border-white/10 flex-1"
-                  />
-                  <Button 
-                    type="submit"
-                    className="bg-gradient-to-r from-fused-purple to-fused-pink hover:opacity-90 text-foreground"
-                    disabled={!newMessage.trim()}
-                  >
-                    <Send className="w-4 h-4" />
-                  </Button>
+              {user ? (
+                <form onSubmit={handleSendMessage} className="p-4 border-t border-white/10">
+                  <div className="flex gap-3">
+                    <Input
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      placeholder={`Message #${activeChannel}`}
+                      className="bg-white/5 border-white/10 flex-1"
+                    />
+                    <Button 
+                      type="submit"
+                      className="bg-gradient-to-r from-fused-blue to-fused-purple hover:opacity-90 text-foreground"
+                      disabled={!newMessage.trim() || sendMessage.isPending}
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <div className="p-4 border-t border-white/10 text-center text-muted-foreground">
+                  Sign in to send messages
                 </div>
-              </form>
-            </GlassCard>
+              )}
+            </BubbleCard>
           </motion.div>
         </div>
       </div>
