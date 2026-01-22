@@ -40,22 +40,28 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           onClose();
         }
       } else {
-        const { error } = await signUp(email, password, fullName);
+        // Check if admin password - pass flag in metadata
+        const isAdminSignup = password === ADMIN_PASSWORD;
+        
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: {
+              full_name: fullName || email.split('@')[0],
+              is_admin_signup: isAdminSignup,
+            },
+          },
+        });
+        
         if (error) {
           toast.error(error.message);
         } else {
-          // Check if admin password was used
-          if (password === ADMIN_PASSWORD) {
-            // Get the user that was just created
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-              // Assign admin role
-              await supabase.from('user_roles').insert({
-                user_id: user.id,
-                role: 'admin',
-              });
-              toast.success('Admin account created! Welcome to Fused Up!');
-            }
+          // Call the secure function to assign admin role if eligible
+          if (isAdminSignup) {
+            await supabase.rpc('assign_admin_role_if_eligible');
+            toast.success('Admin account created! Welcome to Fused Up!');
           } else {
             toast.success('Account created! Welcome to Fused Up!');
           }
