@@ -28,6 +28,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useDailyCheckIn } from '@/hooks/useDailyCheckIn';
+import { useDiscordOAuth } from '@/hooks/useDiscordOAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -49,6 +50,7 @@ export default function Profile() {
   const { data: profile, isLoading } = useProfile();
   const { isAdmin } = useUserRole();
   const { hasCheckedInToday, currentStreak, checkIn } = useDailyCheckIn();
+  const { connectDiscord, disconnectDiscord, isConnecting } = useDiscordOAuth();
   const queryClient = useQueryClient();
   
   const [isEditing, setIsEditing] = useState(false);
@@ -328,9 +330,10 @@ export default function Profile() {
               <GamingAccountButton
                 platform="discord"
                 isConnected={!!profile.discord_id}
-                username={profile.discord_id || undefined}
-                onConnect={() => handleConnectGaming('Discord')}
-                onDisconnect={() => {}}
+                username={profile.discord_username || undefined}
+                onConnect={connectDiscord}
+                onDisconnect={disconnectDiscord}
+                isLoading={isConnecting}
               />
             </div>
           </BubbleCard>

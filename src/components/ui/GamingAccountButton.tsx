@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Link2 } from 'lucide-react';
+import { Check, Link2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -9,6 +9,7 @@ interface GamingAccountButtonProps {
   username?: string;
   onConnect: () => void;
   onDisconnect: () => void;
+  isLoading?: boolean;
 }
 
 const platformConfig = {
@@ -56,6 +57,7 @@ export default function GamingAccountButton({
   username,
   onConnect,
   onDisconnect,
+  isLoading,
 }: GamingAccountButtonProps) {
   const config = platformConfig[platform];
 
@@ -63,6 +65,7 @@ export default function GamingAccountButton({
     <Button
       variant="outline"
       onClick={isConnected ? onDisconnect : onConnect}
+      disabled={isLoading}
       className={cn(
         'w-full justify-start gap-3 h-12 transition-all',
         isConnected 
@@ -72,7 +75,12 @@ export default function GamingAccountButton({
     >
       <span className="flex-shrink-0">{config.icon}</span>
       <span className="flex-1 text-left">
-        {isConnected ? (
+        {isLoading ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Connecting...
+          </span>
+        ) : isConnected ? (
           <span className="flex items-center gap-2">
             <Check className="w-4 h-4 text-green-400" />
             {username || config.name}
