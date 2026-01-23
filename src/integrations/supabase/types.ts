@@ -38,6 +38,54 @@ export type Database = {
         }
         Relationships: []
       }
+      friend_requests: {
+        Row: {
+          created_at: string
+          id: string
+          receiver_id: string
+          sender_id: string
+          status: Database["public"]["Enums"]["friend_request_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          receiver_id: string
+          sender_id: string
+          status?: Database["public"]["Enums"]["friend_request_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          receiver_id?: string
+          sender_id?: string
+          status?: Database["public"]["Enums"]["friend_request_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      friendships: {
+        Row: {
+          created_at: string
+          friend_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          friend_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           comments_count: number
@@ -91,6 +139,9 @@ export type Database = {
           discord_username: string | null
           epic_games_id: string | null
           equipped_items: Json | null
+          followers_count: number
+          following_count: number
+          friends_count: number
           fused_points: number
           id: string
           ign: string
@@ -119,6 +170,9 @@ export type Database = {
           discord_username?: string | null
           epic_games_id?: string | null
           equipped_items?: Json | null
+          followers_count?: number
+          following_count?: number
+          friends_count?: number
           fused_points?: number
           id?: string
           ign: string
@@ -147,6 +201,9 @@ export type Database = {
           discord_username?: string | null
           epic_games_id?: string | null
           equipped_items?: Json | null
+          followers_count?: number
+          following_count?: number
+          friends_count?: number
           fused_points?: number
           id?: string
           ign?: string
@@ -163,6 +220,60 @@ export type Database = {
           total_points_earned?: number
           total_posts?: number
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      user_moderation: {
+        Row: {
+          action_type: Database["public"]["Enums"]["moderation_action_type"]
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          moderator_id: string
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: Database["public"]["Enums"]["moderation_action_type"]
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          moderator_id: string
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: Database["public"]["Enums"]["moderation_action_type"]
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          moderator_id?: string
+          reason?: string | null
           user_id?: string
         }
         Relationships: []
@@ -201,9 +312,18 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_user_moderated: {
+        Args: {
+          _action_type: Database["public"]["Enums"]["moderation_action_type"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      friend_request_status: "pending" | "accepted" | "rejected"
+      moderation_action_type: "ban" | "timeout" | "restrict" | "kick" | "warn"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -332,6 +452,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      friend_request_status: ["pending", "accepted", "rejected"],
+      moderation_action_type: ["ban", "timeout", "restrict", "kick", "warn"],
     },
   },
 } as const
