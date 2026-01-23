@@ -121,7 +121,7 @@ export default function Home() {
             duration: 0.8,
             delay: 0.2
           }}>
-              <span className="text-gradient-animated drop-shadow-[0_0_30px_hsl(263,70%,50%,0.5)]">jaxon is a gay boy</span>
+              <span className="text-gradient-animated drop-shadow-[0_0_30px_hsl(263,70%,50%,0.5)]">FUSED UP</span>
             </motion.h1>
             
             <motion.p className="text-xl md:text-2xl text-foreground/80 max-w-2xl mx-auto mb-12 leading-relaxed" initial={{
