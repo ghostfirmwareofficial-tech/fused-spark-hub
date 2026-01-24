@@ -2,18 +2,42 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Trophy, Users, Zap, Star, Flame, Crown, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+// Profile images
+import profile1 from '@/assets/profile-1.png';
+import profile2 from '@/assets/profile-2.jpg';
+import profile3 from '@/assets/profile-3.png';
+
+// Partner logos
+import redragonLogo from '@/assets/redragon-logo.png';
+import epomakerLogo from '@/assets/epomaker-logo.png';
+
 const teamMembers = [{
-  name: 'Alex',
-  role: 'Pro Player',
-  avatar: '/placeholder.svg'
+  name: 'FusedUp',
+  role: 'Team',
+  avatar: profile1
 }, {
-  name: 'Jordan',
-  role: 'Coach',
-  avatar: '/placeholder.svg'
+  name: 'Member',
+  role: 'Player',
+  avatar: profile2
 }, {
-  name: 'Sam',
-  role: 'Analyst',
-  avatar: '/placeholder.svg'
+  name: 'Elite',
+  role: 'Pro',
+  avatar: profile3
+}];
+
+const partners = [{
+  name: 'Redragon',
+  logo: redragonLogo,
+  url: 'https://redragonshop.com/?aff=6399',
+  code: 'FusedUp',
+  description: 'Premium gaming peripherals - keyboards, mice & headsets'
+}, {
+  name: 'Epomaker',
+  logo: epomakerLogo,
+  url: 'https://epomaker.com/?sca_ref=10502130.4JjKHc6UKU',
+  code: 'FusedUp',
+  description: 'Custom mechanical keyboards & accessories'
 }];
 const teamTiers = [{
   name: 'Amateur',
@@ -267,18 +291,70 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Sponsor Section */}
+      {/* Partners Section */}
       <section className="py-24 px-4 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} viewport={{
-          once: true
-        }}>
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Our <span className="gradient-text">Partners</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Trusted by the best brands in gaming gear.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {partners.map((partner, index) => (
+              <motion.div 
+                key={partner.name} 
+                initial={{ opacity: 0, y: 20 }} 
+                whileInView={{ opacity: 1, y: 0 }} 
+                viewport={{ once: true }} 
+                transition={{ delay: index * 0.15 }}
+              >
+                <div className="glass-card glass-card-hover p-6 h-full">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="relative w-full h-32 rounded-lg overflow-hidden bg-white/5">
+                      <img 
+                        src={partner.logo} 
+                        alt={partner.name} 
+                        className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" 
+                      />
+                    </div>
+                    <div className="text-center">
+                      <h3 className="text-xl font-bold mb-2">{partner.name}</h3>
+                      <p className="text-sm text-muted-foreground mb-4">{partner.description}</p>
+                      <a href={partner.url} target="_blank" rel="noopener noreferrer">
+                        <Button className="rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90 group">
+                          Use Code: {partner.code}
+                          <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* DUBBY Partner */}
+          <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }}>
             <div className="glass-card p-8 md:p-12">
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="flex-shrink-0 relative">
