@@ -65,15 +65,37 @@ export default function Navbar() {
 
             {/* Pill Navigation - Desktop */}
             <div className="hidden md:flex items-center justify-center flex-1">
-              <div className="pill-nav">
+              <div className="pill-nav relative">
+                {/* Animated sliding indicator */}
+                {navItems.map((item, index) => (
+                  location.pathname === item.path && (
+                    <motion.div
+                      key="indicator"
+                      layoutId="nav-indicator"
+                      className="absolute top-1 bottom-1 rounded-full bg-primary"
+                      style={{
+                        left: `calc(${index * 100 / navItems.length}% + 4px)`,
+                        width: `calc(${100 / navItems.length}% - 8px)`,
+                      }}
+                      initial={false}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 25,
+                        mass: 0.8,
+                      }}
+                    />
+                  )
+                ))}
+                
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
                     className={cn(
-                      "pill-nav-item",
+                      "pill-nav-item relative z-10",
                       location.pathname === item.path
-                        ? "pill-nav-item-active"
+                        ? "text-primary-foreground"
                         : "pill-nav-item-inactive"
                     )}
                   >
