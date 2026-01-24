@@ -14,6 +14,7 @@ import CommunityStats from '@/components/ui/CommunityStats';
 import ModerationPanel from '@/components/admin/ModerationPanel';
 import ContentModeration from '@/components/admin/ContentModeration';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
+import ApplicationsManagement from '@/components/admin/ApplicationsManagement';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
@@ -88,6 +89,11 @@ export default function AdminPanel() {
         {/* Analytics Dashboard */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <AnalyticsDashboard />
+        </motion.div>
+
+        {/* Applications Management */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <ApplicationsManagement />
         </motion.div>
 
         {/* Content Moderation */}

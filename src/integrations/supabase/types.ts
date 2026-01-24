@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      applications: {
+        Row: {
+          admin_notes: string | null
+          age: number | null
+          availability: string | null
+          created_at: string
+          discord_username: string | null
+          experience: string | null
+          id: string
+          ign: string
+          pr_score: number | null
+          region: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          updated_at: string
+          user_id: string
+          why_join: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          age?: number | null
+          availability?: string | null
+          created_at?: string
+          discord_username?: string | null
+          experience?: string | null
+          id?: string
+          ign: string
+          pr_score?: number | null
+          region?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+          user_id: string
+          why_join: string
+        }
+        Update: {
+          admin_notes?: string | null
+          age?: number | null
+          availability?: string | null
+          created_at?: string
+          discord_username?: string | null
+          experience?: string | null
+          id?: string
+          ign?: string
+          pr_score?: number | null
+          region?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+          user_id?: string
+          why_join?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           channel: string
@@ -322,6 +376,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      application_status: "pending" | "reviewing" | "accepted" | "rejected"
       friend_request_status: "pending" | "accepted" | "rejected"
       moderation_action_type: "ban" | "timeout" | "restrict" | "kick" | "warn"
     }
@@ -452,6 +507,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      application_status: ["pending", "reviewing", "accepted", "rejected"],
       friend_request_status: ["pending", "accepted", "rejected"],
       moderation_action_type: ["ban", "timeout", "restrict", "kick", "warn"],
     },
