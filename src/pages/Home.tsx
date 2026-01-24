@@ -25,7 +25,7 @@ const teamTiers = [{
   name: 'Semi-Pro',
   prRange: '50-99 PR',
   icon: Flame,
-  color: 'from-primary to-fused-mint',
+  color: 'from-primary to-fused-blue',
   description: 'Proven grinders ready for more'
 }, {
   name: 'Pro',
@@ -37,17 +37,20 @@ const teamTiers = [{
 export default function Home() {
   return <div className="relative">
       {/* Hero Section */}
-      <section className="min-h-[calc(100vh-100px)] relative px-4 lg:px-8 py-8">
-        <div className="glass-container min-h-[calc(100vh-150px)] p-8 lg:p-12">
+      <section className="min-h-[calc(100vh-100px)] relative px-4 lg:px-8 py-4 flex items-center">
+        <div className="glass-container w-full p-8 lg:p-12">
           {/* Decorative floating elements */}
-          <div className="absolute top-20 right-20 w-32 h-32 rounded-full bg-primary/5 blur-3xl animate-float" />
-          <div className="absolute bottom-40 left-40 w-24 h-24 rounded-full bg-fused-mint/5 blur-2xl animate-float" style={{
+          <div className="absolute top-20 right-20 w-32 h-32 rounded-full bg-primary/10 blur-3xl animate-float" />
+          <div className="absolute bottom-40 left-40 w-24 h-24 rounded-full bg-fused-blue/10 blur-2xl animate-float" style={{
           animationDelay: '2s'
         }} />
+          <div className="absolute top-1/2 left-1/4 w-40 h-40 rounded-full bg-fused-violet/5 blur-3xl animate-float" style={{
+          animationDelay: '4s'
+        }} />
           
-          <div className="grid lg:grid-cols-[1fr,380px] gap-8 h-full">
+          <div className="grid lg:grid-cols-[1fr,380px] gap-8">
             {/* Main Content */}
-            <div className="flex flex-col justify-center">
+            <div className="flex flex-col justify-center py-8">
               {/* Hero Text */}
               <motion.div initial={{
               opacity: 0,
@@ -59,9 +62,8 @@ export default function Home() {
               duration: 0.8
             }} className="max-w-2xl">
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tight mb-8">
-                  <br />
                   <span className="text-foreground">THIS IS</span><br />
-                  <span className="gradient-text">FUSEDUP.</span>
+                  <span className="gradient-text glow-text">FUSEDUP.</span>
                 </h1>
                 
                 <p className="text-lg text-muted-foreground max-w-lg mb-8 leading-relaxed">
@@ -70,13 +72,13 @@ export default function Home() {
                 
                 <div className="flex flex-wrap gap-4">
                   <Link to="/apply">
-                    <Button size="lg" className="rounded-full px-8 py-6 bg-primary text-primary-foreground hover:bg-primary/90 group">
+                    <Button size="lg" className="rounded-full px-8 py-6 bg-primary text-primary-foreground hover:bg-primary/90 group shadow-lg shadow-primary/25">
                       Join the Team
                       <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
                   <Link to="/feed">
-                    <Button size="lg" variant="outline" className="rounded-full px-8 py-6 border-white/20 hover:bg-white/5">
+                    <Button size="lg" variant="outline" className="rounded-full px-8 py-6 border-primary/30 hover:bg-primary/10 hover:border-primary/50">
                       Explore Community
                     </Button>
                   </Link>
@@ -90,7 +92,7 @@ export default function Home() {
               opacity: 1
             }} transition={{
               delay: 1
-            }} className="mt-auto pt-12">
+            }} className="mt-12">
                 <motion.div animate={{
                 y: [0, 8, 0]
               }} transition={{
