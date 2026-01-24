@@ -166,9 +166,16 @@ export default function Home() {
                   <Button size="sm" className="flex-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10">
                     View Team
                   </Button>
-                  <Button size="sm" className="flex-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10">
-                    Join Discord
-                  </Button>
+                  <a 
+                    href="https://discord.gg/fusedupesports" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex-1"
+                  >
+                    <Button size="sm" className="w-full rounded-full bg-[#5865F2] hover:bg-[#4752C4] border-0">
+                      Join Discord
+                    </Button>
+                  </a>
                 </div>
               </div>
 
