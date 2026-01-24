@@ -62,16 +62,14 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Fused Up Custom Colors - Green/Mint Theme
-        "fused-green": "hsl(var(--fused-green))",
-        "fused-mint": "hsl(var(--fused-mint))",
+        // Fused Up Custom Colors - Deep Blue/Purple/Black Theme
+        "fused-purple": "hsl(var(--fused-purple))",
+        "fused-blue": "hsl(var(--fused-blue))",
         "fused-dark": "hsl(var(--fused-dark))",
         "fused-surface": "hsl(var(--fused-surface))",
         "fused-glow": "hsl(var(--fused-glow))",
-        // Legacy colors
-        "fused-purple": "hsl(var(--fused-purple))",
-        "fused-blue": "hsl(var(--fused-blue))",
-        "fused-pink": "hsl(var(--fused-pink))",
+        "fused-indigo": "hsl(var(--fused-indigo))",
+        "fused-violet": "hsl(var(--fused-violet))",
         // Rank Colors
         "rank-recruit": "hsl(var(--rank-recruit))",
         "rank-grinder": "hsl(var(--rank-grinder))",
@@ -120,8 +118,8 @@ export default {
           "100%": { transform: "translateX(0)" },
         },
         "glow-pulse": {
-          "0%, 100%": { boxShadow: "0 0 20px rgba(52, 211, 153, 0.3)" },
-          "50%": { boxShadow: "0 0 40px rgba(52, 211, 153, 0.5)" },
+          "0%, 100%": { boxShadow: "0 0 20px rgba(139, 92, 246, 0.4)" },
+          "50%": { boxShadow: "0 0 40px rgba(139, 92, 246, 0.6)" },
         },
         float: {
           "0%, 100%": { transform: "translateY(0)" },
@@ -147,7 +145,7 @@ export default {
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-fused": "linear-gradient(135deg, hsl(var(--fused-green)), hsl(var(--fused-mint)))",
+        "gradient-fused": "linear-gradient(135deg, hsl(var(--fused-purple)), hsl(var(--fused-blue)))",
       },
     },
   },
