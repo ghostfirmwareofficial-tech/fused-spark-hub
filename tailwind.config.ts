@@ -62,11 +62,16 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Fused Up Custom Colors - Dark Blue & Purple
-        "fused-purple": "hsl(var(--fused-purple))",
-        "fused-blue": "hsl(var(--fused-blue))",
+        // Fused Up Custom Colors - Green/Mint Theme
+        "fused-green": "hsl(var(--fused-green))",
+        "fused-mint": "hsl(var(--fused-mint))",
         "fused-dark": "hsl(var(--fused-dark))",
         "fused-surface": "hsl(var(--fused-surface))",
+        "fused-glow": "hsl(var(--fused-glow))",
+        // Legacy colors
+        "fused-purple": "hsl(var(--fused-purple))",
+        "fused-blue": "hsl(var(--fused-blue))",
+        "fused-pink": "hsl(var(--fused-pink))",
         // Rank Colors
         "rank-recruit": "hsl(var(--rank-recruit))",
         "rank-grinder": "hsl(var(--rank-grinder))",
@@ -115,12 +120,18 @@ export default {
           "100%": { transform: "translateX(0)" },
         },
         "glow-pulse": {
-          "0%, 100%": { boxShadow: "0 0 20px rgba(139, 92, 246, 0.3)" },
-          "50%": { boxShadow: "0 0 40px rgba(139, 92, 246, 0.5)" },
+          "0%, 100%": { boxShadow: "0 0 20px rgba(52, 211, 153, 0.3)" },
+          "50%": { boxShadow: "0 0 40px rgba(52, 211, 153, 0.5)" },
         },
         float: {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
+        },
+        "float-3d": {
+          "0%, 100%": { transform: "translateY(0) rotateX(0) rotateY(0)" },
+          "25%": { transform: "translateY(-15px) rotateX(5deg) rotateY(5deg)" },
+          "50%": { transform: "translateY(-5px) rotateX(-3deg) rotateY(-3deg)" },
+          "75%": { transform: "translateY(-10px) rotateX(2deg) rotateY(2deg)" },
         },
       },
       animation: {
@@ -132,10 +143,11 @@ export default {
         "slide-in-right": "slide-in-right 0.3s ease-out",
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
         float: "float 6s ease-in-out infinite",
+        "float-3d": "float-3d 8s ease-in-out infinite",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-fused": "linear-gradient(135deg, hsl(var(--fused-blue)), hsl(var(--fused-purple)))",
+        "gradient-fused": "linear-gradient(135deg, hsl(var(--fused-green)), hsl(var(--fused-mint)))",
       },
     },
   },
