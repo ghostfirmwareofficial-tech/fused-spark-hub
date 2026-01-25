@@ -92,21 +92,37 @@ export default function Chat() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <BubbleCard className="p-4">
+            <div className="liquid-glass-tabs p-4 rounded-2xl">
               <div className="flex items-center gap-2 mb-4 px-2">
                 <Users className="w-5 h-5 text-fused-purple" />
                 <span className="font-semibold">Channels</span>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 relative">
+                {/* Animated channel indicator */}
+                <motion.div
+                  className="absolute left-0 right-0 rounded-lg"
+                  layoutId="channelIndicator"
+                  style={{
+                    height: '40px',
+                    top: `${channels.findIndex(c => c.id === activeChannel) * 44}px`,
+                    background: 'linear-gradient(135deg, hsl(263 70% 60% / 0.25) 0%, hsl(220 70% 55% / 0.15) 100%)',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)',
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 30,
+                  }}
+                />
                 {channels.map((channel) => (
                   <button
                     key={channel.id}
                     onClick={() => setActiveChannel(channel.id)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left",
+                      "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left relative z-10",
                       activeChannel === channel.id
-                        ? "bg-fused-purple/20 text-fused-purple"
-                        : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                        ? "text-fused-purple"
+                        : "text-muted-foreground hover:text-foreground"
                     )}
                   >
                     <channel.icon className="w-4 h-4 flex-shrink-0" />
@@ -118,7 +134,7 @@ export default function Chat() {
               <div className="mt-6 pt-6 border-t border-white/10">
                 <CommunityStats compact className="justify-center" />
               </div>
-            </BubbleCard>
+            </div>
           </motion.div>
 
           {/* Chat Box - Fixed height container */}
