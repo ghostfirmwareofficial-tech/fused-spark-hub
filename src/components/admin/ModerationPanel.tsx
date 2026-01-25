@@ -1,16 +1,19 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { 
   Ban, 
   Clock, 
   ShieldOff, 
   AlertTriangle,
   Undo2,
-  Loader2 
+  Loader2,
+  Crown,
+  ShieldCheck,
+  Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -26,8 +29,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useModeration, ModerationActionType } from '@/hooks/useModeration';
-import BubbleCard from '@/components/ui/BubbleCard';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { format } from 'date-fns';
+
+type AppRole = 'admin' | 'moderator' | 'user';
 
 interface ModerationPanelProps {
   userId: string;
@@ -52,12 +59,68 @@ const actionColors: Record<ModerationActionType, string> = {
 
 export default function ModerationPanel({ userId, userIgn }: ModerationPanelProps) {
   const { getUserModeration, applyModeration, revokeModeration, moderationActions } = useModeration();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [actionType, setActionType] = useState<ModerationActionType>('warn');
   const [reason, setReason] = useState('');
   const [duration, setDuration] = useState('');
+  const [selectedRole, setSelectedRole] = useState<AppRole>('moderator');
 
   const userActions = getUserModeration(userId);
+
+  // Fetch user's current roles
+  const { data: userRoles = [] } = useQuery({
+    queryKey: ['user-roles', userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId);
+      
+      if (error) throw error;
+      return data?.map(r => r.role as AppRole) || [];
+    },
+  });
+
+  // Assign role mutation
+  const assignRole = useMutation({
+    mutationFn: async (role: AppRole) => {
+      const { error } = await supabase
+        .from('user_roles')
+        .upsert({ user_id: userId, role }, { onConflict: 'user_id,role' });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-roles', userId] });
+      queryClient.invalidateQueries({ queryKey: ['all-users-roles'] });
+      toast.success('Role assigned successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to assign role: ' + error.message);
+    },
+  });
+
+  // Remove role mutation
+  const removeRole = useMutation({
+    mutationFn: async (role: AppRole) => {
+      const { error } = await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', userId)
+        .eq('role', role);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-roles', userId] });
+      queryClient.invalidateQueries({ queryKey: ['all-users-roles'] });
+      toast.success('Role removed successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to remove role: ' + error.message);
+    },
+  });
 
   const handleSubmit = () => {
     applyModeration.mutate({
@@ -71,8 +134,99 @@ export default function ModerationPanel({ userId, userIgn }: ModerationPanelProp
     setDuration('');
   };
 
+  const getRoleIcon = (role: AppRole) => {
+    switch (role) {
+      case 'admin':
+        return <Crown className="h-3 w-3" />;
+      case 'moderator':
+        return <ShieldCheck className="h-3 w-3" />;
+      default:
+        return null;
+    }
+  };
+
+  const getRoleColor = (role: AppRole) => {
+    switch (role) {
+      case 'admin':
+        return 'bg-destructive/20 text-destructive border-destructive/30';
+      case 'moderator':
+        return 'bg-primary/20 text-primary border-primary/30';
+      default:
+        return 'bg-muted text-muted-foreground border-border';
+    }
+  };
+
   return (
     <div className="space-y-4">
+      {/* User Roles Section */}
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground font-medium">User Roles:</p>
+        <div className="flex flex-wrap gap-2">
+          {userRoles.length === 0 ? (
+            <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground">
+              Regular User
+            </Badge>
+          ) : (
+            userRoles.map((role) => (
+              <Badge
+                key={role}
+                variant="outline"
+                className={`text-xs flex items-center gap-1 ${getRoleColor(role)}`}
+              >
+                {getRoleIcon(role)}
+                {role.charAt(0).toUpperCase() + role.slice(1)}
+                <button
+                  onClick={() => removeRole.mutate(role)}
+                  className="ml-1 hover:text-destructive transition-colors"
+                  disabled={removeRole.isPending}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))
+          )}
+        </div>
+        
+        {/* Add Role */}
+        <div className="flex items-center gap-2 mt-2">
+          <Select
+            value={selectedRole}
+            onValueChange={(value) => setSelectedRole(value as AppRole)}
+          >
+            <SelectTrigger className="w-32 bg-background/50 border-border/50 h-8 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="admin">
+                <span className="flex items-center gap-1">
+                  <Crown className="h-3 w-3 text-destructive" /> Admin
+                </span>
+              </SelectItem>
+              <SelectItem value="moderator">
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="h-3 w-3 text-primary" /> Moderator
+                </span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => assignRole.mutate(selectedRole)}
+            disabled={assignRole.isPending || userRoles.includes(selectedRole)}
+            className="h-8"
+          >
+            {assignRole.isPending ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              'Add Role'
+            )}
+          </Button>
+        </div>
+      </div>
+
+      <div className="border-t border-border/30 pt-4" />
+
       {/* Active Moderation Status */}
       {userActions.length > 0 && (
         <div className="space-y-2">
