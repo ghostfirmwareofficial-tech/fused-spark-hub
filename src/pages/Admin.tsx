@@ -15,6 +15,7 @@ import ModerationPanel from '@/components/admin/ModerationPanel';
 import ContentModeration from '@/components/admin/ContentModeration';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import ApplicationsManagement from '@/components/admin/ApplicationsManagement';
+import RoleManagement from '@/components/admin/RoleManagement';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
@@ -99,6 +100,13 @@ export default function AdminPanel() {
         {/* Content Moderation */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <ContentModeration />
+        </motion.div>
+
+        {/* Role Management */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+          <BubbleCard className="p-6">
+            <RoleManagement />
+          </BubbleCard>
         </motion.div>
 
         {/* Users Table with Moderation */}
