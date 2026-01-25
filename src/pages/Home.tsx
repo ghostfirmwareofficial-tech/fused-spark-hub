@@ -84,8 +84,8 @@ export default function Home() {
               duration: 0.8
             }} className="max-w-2xl">
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tight mb-8">
-                  <span className="text-foreground">Jaxon is</span><br />
-                  <span className="gradient-text glow-text">A Pussy.</span>
+                  <span className="text-foreground">THIS IS</span><br />
+                  <span className="gradient-text glow-text">FUSED UP.</span>
                 </h1>
                 
                 <p className="text-lg text-muted-foreground max-w-lg mb-8 leading-relaxed">
