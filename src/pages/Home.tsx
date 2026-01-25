@@ -11,7 +11,6 @@ import profile3 from '@/assets/profile-3.png';
 // Partner logos
 import redragonLogo from '@/assets/redragon-logo.png';
 import epomakerLogo from '@/assets/epomaker-logo.png';
-
 const teamMembers = [{
   name: 'FusedUp',
   role: 'Team',
@@ -25,7 +24,6 @@ const teamMembers = [{
   role: 'Pro',
   avatar: profile3
 }];
-
 const partners = [{
   name: 'Redragon',
   logo: redragonLogo,
@@ -86,8 +84,8 @@ export default function Home() {
               duration: 0.8
             }} className="max-w-2xl">
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tight mb-8">
-                  <span className="text-foreground">THIS IS</span><br />
-                  <span className="gradient-text glow-text">FUSEDUP.</span>
+                  <span className="text-foreground">Jaxon is</span><br />
+                  <span className="gradient-text glow-text">A Pussy.</span>
                 </h1>
                 
                 <p className="text-lg text-muted-foreground max-w-lg mb-8 leading-relaxed">
@@ -166,12 +164,7 @@ export default function Home() {
                   <Button size="sm" className="flex-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10">
                     View Team
                   </Button>
-                  <a 
-                    href="https://discord.gg/fusedupesports" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex-1"
-                  >
+                  <a href="https://discord.gg/fusedupesports" target="_blank" rel="noopener noreferrer" className="flex-1">
                     <Button size="sm" className="w-full rounded-full bg-[#5865F2] hover:bg-[#4752C4] border-0">
                       Join Discord
                     </Button>
@@ -302,14 +295,14 @@ export default function Home() {
       <section className="py-24 px-4 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <motion.div initial={{
-            opacity: 0,
-            y: 20
-          }} whileInView={{
-            opacity: 1,
-            y: 0
-          }} viewport={{
-            once: true
-          }} className="text-center mb-16">
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Our <span className="gradient-text">Partners</span>
             </h2>
@@ -319,22 +312,21 @@ export default function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {partners.map((partner, index) => (
-              <motion.div 
-                key={partner.name} 
-                initial={{ opacity: 0, y: 20 }} 
-                whileInView={{ opacity: 1, y: 0 }} 
-                viewport={{ once: true }} 
-                transition={{ delay: index * 0.15 }}
-              >
+            {partners.map((partner, index) => <motion.div key={partner.name} initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            delay: index * 0.15
+          }}>
                 <div className="glass-card glass-card-hover p-6 h-full">
                   <div className="flex flex-col items-center gap-4">
                     <div className="relative w-full h-32 rounded-lg overflow-hidden bg-white/5">
-                      <img 
-                        src={partner.logo} 
-                        alt={partner.name} 
-                        className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" 
-                      />
+                      <img src={partner.logo} alt={partner.name} className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="text-center">
                       <h3 className="text-xl font-bold mb-2">{partner.name}</h3>
@@ -348,20 +340,19 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            ))}
+              </motion.div>)}
           </div>
 
           {/* DUBBY Partner */}
           <motion.div initial={{
-            opacity: 0,
-            y: 20
-          }} whileInView={{
-            opacity: 1,
-            y: 0
-          }} viewport={{
-            once: true
-          }}>
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }}>
             <div className="glass-card p-8 md:p-12">
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="flex-shrink-0 relative">
