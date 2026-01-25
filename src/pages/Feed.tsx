@@ -153,15 +153,17 @@ export default function Feed() {
               />
             </div>
 
-            {/* Filter Tabs */}
-            <div className="relative flex items-center bg-white/5 rounded-full p-1 border border-white/10">
+            {/* Filter Tabs with Liquid Glass Effect */}
+            <div className="relative flex items-center liquid-glass-tabs p-1">
               {/* Animated background indicator */}
               <motion.div
-                className="absolute inset-y-1 rounded-full bg-gradient-to-r from-fused-purple to-fused-blue"
+                className="absolute inset-y-1 rounded-full"
                 layoutId="feedTabIndicator"
                 style={{
                   width: `calc(100% / ${feedTabs.length} - 4px)`,
                   left: `calc(${feedTabs.findIndex(t => t.id === activeFilter)} * 100% / ${feedTabs.length} + 2px)`,
+                  background: 'linear-gradient(135deg, hsl(263 70% 60% / 0.9) 0%, hsl(220 70% 55% / 0.9) 100%)',
+                  boxShadow: '0 4px 20px rgba(139, 92, 246, 0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
                 }}
                 transition={{
                   type: "spring",
