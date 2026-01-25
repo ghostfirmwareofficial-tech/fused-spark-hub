@@ -13,6 +13,9 @@ interface Post {
   comments_count: number;
   reposts_count: number;
   is_featured: boolean;
+  is_pinned: boolean;
+  pinned_at: string | null;
+  pinned_by: string | null;
   created_at: string;
   profiles?: {
     ign: string;
