@@ -154,15 +154,29 @@ export default function Feed() {
             </div>
 
             {/* Filter Tabs */}
-            <div className="flex items-center bg-white/5 rounded-full p-1 border border-white/10">
+            <div className="relative flex items-center bg-white/5 rounded-full p-1 border border-white/10">
+              {/* Animated background indicator */}
+              <motion.div
+                className="absolute inset-y-1 rounded-full bg-gradient-to-r from-fused-purple to-fused-blue"
+                layoutId="feedTabIndicator"
+                style={{
+                  width: `calc(100% / ${feedTabs.length} - 4px)`,
+                  left: `calc(${feedTabs.findIndex(t => t.id === activeFilter)} * 100% / ${feedTabs.length} + 2px)`,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 30,
+                }}
+              />
               {feedTabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveFilter(tab.id)}
                   className={cn(
-                    "flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all",
+                    "relative z-10 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
                     activeFilter === tab.id
-                      ? "bg-gradient-to-r from-fused-purple to-fused-blue text-white"
+                      ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
