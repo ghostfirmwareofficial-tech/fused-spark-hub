@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Crown, Star, Shield, Zap, Flame, Sparkles, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { forwardRef } from 'react';
 
 type RankType = 'Recruit' | 'Grinder' | 'Challenger' | 'Elite' | 'Fused Core' | 'Ascended';
 
@@ -48,13 +49,14 @@ const sizes = {
   lg: { icon: 'w-5 h-5', text: 'text-base', padding: 'px-4 py-1.5', gap: 'gap-2' }
 };
 
-export default function RankBadge({ rank, size = 'md', showLabel = true }: RankBadgeProps) {
+const RankBadge = forwardRef<HTMLDivElement, RankBadgeProps>(({ rank, size = 'md', showLabel = true }, ref) => {
   const config = rankConfig[rank as RankType] || rankConfig['Recruit'];
   const Icon = config.icon;
   const s = sizes[size];
 
   return (
     <motion.div
+      ref={ref}
       whileHover={{ scale: 1.05 }}
       className={cn(
         "inline-flex items-center rounded-full border",
@@ -67,4 +69,8 @@ export default function RankBadge({ rank, size = 'md', showLabel = true }: RankB
       {showLabel && <span className={cn("font-medium", s.text)}>{rank}</span>}
     </motion.div>
   );
-}
+});
+
+RankBadge.displayName = 'RankBadge';
+
+export default RankBadge;

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { ReactNode } from 'react';
+import { ReactNode, forwardRef } from 'react';
 
 interface GlassCardProps {
   children: ReactNode;
@@ -12,7 +12,7 @@ interface GlassCardProps {
   variant?: 'default' | 'accent' | 'bordered' | 'minimal';
 }
 
-export default function GlassCard({ 
+const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(({ 
   children, 
   className, 
   hover = true, 
@@ -20,7 +20,7 @@ export default function GlassCard({
   onClick, 
   animate = true,
   variant = 'default'
-}: GlassCardProps) {
+}, ref) => {
   const variants = {
     default: "bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10",
     accent: "bg-gradient-to-br from-fused-purple/10 to-fused-pink/5 border border-fused-purple/20",
@@ -30,6 +30,7 @@ export default function GlassCard({
 
   return (
     <motion.div
+      ref={ref}
       whileHover={hover && animate ? { scale: 1.01 } : undefined}
       whileTap={onClick && animate ? { scale: 0.99 } : undefined}
       onClick={onClick}
@@ -55,4 +56,8 @@ export default function GlassCard({
       </div>
     </motion.div>
   );
-}
+});
+
+GlassCard.displayName = 'GlassCard';
+
+export default GlassCard;

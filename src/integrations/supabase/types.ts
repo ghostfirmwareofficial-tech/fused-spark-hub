@@ -92,6 +92,41 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friend_requests: {
         Row: {
           created_at: string
@@ -140,6 +175,35 @@ export type Database = {
         }
         Relationships: []
       }
+      post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           comments_count: number
@@ -148,7 +212,10 @@ export type Database = {
           id: string
           image_url: string | null
           is_featured: boolean
+          is_pinned: boolean
           likes_count: number
+          pinned_at: string | null
+          pinned_by: string | null
           reposts_count: number
           updated_at: string
           user_id: string
@@ -161,7 +228,10 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_featured?: boolean
+          is_pinned?: boolean
           likes_count?: number
+          pinned_at?: string | null
+          pinned_by?: string | null
           reposts_count?: number
           updated_at?: string
           user_id: string
@@ -174,7 +244,10 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_featured?: boolean
+          is_pinned?: boolean
           likes_count?: number
+          pinned_at?: string | null
+          pinned_by?: string | null
           reposts_count?: number
           updated_at?: string
           user_id?: string
@@ -273,6 +346,74 @@ export type Database = {
           total_likes_received?: number
           total_points_earned?: number
           total_posts?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reposts: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reposts_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_up_requests: {
+        Row: {
+          created_at: string
+          description: string | null
+          game: string
+          game_mode: Database["public"]["Enums"]["game_mode"]
+          id: string
+          is_active: boolean
+          slots_available: number
+          team_size: Database["public"]["Enums"]["team_size"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          game: string
+          game_mode?: Database["public"]["Enums"]["game_mode"]
+          id?: string
+          is_active?: boolean
+          slots_available?: number
+          team_size: Database["public"]["Enums"]["team_size"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          game?: string
+          game_mode?: Database["public"]["Enums"]["game_mode"]
+          id?: string
+          is_active?: boolean
+          slots_available?: number
+          team_size?: Database["public"]["Enums"]["team_size"]
           updated_at?: string
           user_id?: string
         }
@@ -378,7 +519,9 @@ export type Database = {
       app_role: "admin" | "moderator" | "user"
       application_status: "pending" | "reviewing" | "accepted" | "rejected"
       friend_request_status: "pending" | "accepted" | "rejected"
+      game_mode: "ranked" | "unranked" | "casual"
       moderation_action_type: "ban" | "timeout" | "restrict" | "kick" | "warn"
+      team_size: "duos" | "trios" | "quads"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -509,7 +652,9 @@ export const Constants = {
       app_role: ["admin", "moderator", "user"],
       application_status: ["pending", "reviewing", "accepted", "rejected"],
       friend_request_status: ["pending", "accepted", "rejected"],
+      game_mode: ["ranked", "unranked", "casual"],
       moderation_action_type: ["ban", "timeout", "restrict", "kick", "warn"],
+      team_size: ["duos", "trios", "quads"],
     },
   },
 } as const
