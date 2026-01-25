@@ -85,14 +85,14 @@ export default function Chat() {
           <CommunityStats />
         </motion.div>
 
-        <div className="grid lg:grid-cols-[240px_1fr] gap-6 h-[600px] max-h-[calc(100vh-220px)]">
+        <div className="grid lg:grid-cols-[240px_1fr] gap-6">
           {/* Channels Sidebar */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <BubbleCard className="p-4 h-full">
+            <BubbleCard className="p-4">
               <div className="flex items-center gap-2 mb-4 px-2">
                 <Users className="w-5 h-5 text-fused-purple" />
                 <span className="font-semibold">Channels</span>
@@ -121,41 +121,45 @@ export default function Chat() {
             </BubbleCard>
           </motion.div>
 
-          {/* Chat Area */}
+          {/* Chat Box - Fixed height container */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
+            className="h-[600px]"
           >
-            <BubbleCard className="h-full flex flex-col overflow-hidden">
+            <BubbleCard className="h-full flex flex-col">
               {/* Channel Header */}
-              <div className="px-6 py-4 border-b border-white/10 flex-shrink-0">
+              <div className="px-4 py-3 border-b border-white/10 flex-shrink-0">
                 <div className="flex items-center gap-2">
-                  <Hash className="w-5 h-5 text-muted-foreground" />
-                  <span className="font-semibold">{activeChannel}</span>
+                  <Hash className="w-4 h-4 text-muted-foreground" />
+                  <span className="font-semibold text-sm">{activeChannel}</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {channels.find(c => c.id === activeChannel)?.description}
-                </p>
               </div>
 
-              {/* Messages - Scrollable container */}
-              <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+              {/* Messages Container - Fixed scrollable area */}
+              <div 
+                className="flex-1 overflow-y-auto p-4 space-y-3"
+                style={{ 
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: 'rgba(255,255,255,0.1) transparent'
+                }}
+              >
                 {isLoading ? (
                   <div className="flex items-center justify-center h-full">
-                    <div className="animate-spin w-8 h-8 border-2 border-fused-purple border-t-transparent rounded-full" />
+                    <div className="animate-spin w-6 h-6 border-2 border-fused-purple border-t-transparent rounded-full" />
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                    <MessageSquare className="w-12 h-12 mb-4 opacity-50" />
-                    <p>No messages yet. Be the first to say something!</p>
+                    <MessageSquare className="w-10 h-10 mb-3 opacity-50" />
+                    <p className="text-sm">No messages yet. Be the first!</p>
                   </div>
                 ) : (
                   messages.map((message) => (
-                    <div key={message.id} className="flex gap-3">
+                    <div key={message.id} className="flex gap-2 group hover:bg-white/5 rounded-lg p-2 -mx-2 transition-colors">
                       <button
                         onClick={() => openUserProfile(message.user_id)}
-                        className="w-10 h-10 rounded-full bg-fused-purple/30 flex items-center justify-center border border-fused-purple/50 flex-shrink-0 overflow-hidden hover:ring-2 hover:ring-fused-purple/50 transition-all cursor-pointer"
+                        className="w-8 h-8 rounded-full bg-fused-purple/30 flex items-center justify-center border border-fused-purple/50 flex-shrink-0 overflow-hidden hover:ring-2 hover:ring-fused-purple/50 transition-all cursor-pointer"
                       >
                         {message.profiles?.avatar_url ? (
                           <img 
@@ -164,7 +168,7 @@ export default function Chat() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <span className="text-fused-purple font-semibold text-sm">
+                          <span className="text-fused-purple font-semibold text-xs">
                             {message.profiles?.ign?.[0] || '?'}
                           </span>
                         )}
@@ -173,19 +177,19 @@ export default function Chat() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <button
                             onClick={() => openUserProfile(message.user_id)}
-                            className="font-semibold hover:text-fused-purple transition-colors cursor-pointer"
+                            className="font-medium text-sm hover:text-fused-purple transition-colors cursor-pointer"
                           >
                             {message.profiles?.ign || 'Unknown'}
                           </button>
                           <RankBadge rank={message.profiles?.rank || 'Recruit'} size="sm" showLabel={false} />
-                          <span className={cn("text-xs", getRoleColor(message.profiles?.role || 'Member'))}>
+                          <span className={cn("text-[10px]", getRoleColor(message.profiles?.role || 'Member'))}>
                             {message.profiles?.role}
                           </span>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-[10px] text-muted-foreground ml-auto">
                             {format(new Date(message.created_at), 'h:mm a')}
                           </span>
                         </div>
-                        <p className="text-muted-foreground mt-1">{message.content}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{message.content}</p>
                       </div>
                     </div>
                   ))
@@ -193,19 +197,20 @@ export default function Chat() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Message Input */}
+              {/* Message Input - Fixed at bottom */}
               {user ? (
-                <form onSubmit={handleSendMessage} className="p-4 border-t border-white/10">
-                  <div className="flex gap-3">
+                <form onSubmit={handleSendMessage} className="p-3 border-t border-white/10 flex-shrink-0">
+                  <div className="flex gap-2">
                     <Input
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       placeholder={`Message #${activeChannel}`}
-                      className="bg-white/5 border-white/10 flex-1"
+                      className="bg-white/5 border-white/10 flex-1 h-9 text-sm"
                     />
                     <Button 
                       type="submit"
-                      className="bg-gradient-to-r from-fused-blue to-fused-purple hover:opacity-90 text-foreground"
+                      size="sm"
+                      className="bg-gradient-to-r from-fused-blue to-fused-purple hover:opacity-90 text-foreground h-9 px-3"
                       disabled={!newMessage.trim() || sendMessage.isPending}
                     >
                       <Send className="w-4 h-4" />
@@ -213,7 +218,7 @@ export default function Chat() {
                   </div>
                 </form>
               ) : (
-                <div className="p-4 border-t border-white/10 text-center text-muted-foreground">
+                <div className="p-3 border-t border-white/10 text-center text-muted-foreground text-sm flex-shrink-0">
                   Sign in to send messages
                 </div>
               )}
