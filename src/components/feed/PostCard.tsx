@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import GlassCard from '@/components/ui/GlassCard';
 import RankBadge from '@/components/ui/RankBadge';
+import ImageLightbox from '@/components/ui/ImageLightbox';
+import UserProfileModal from '@/components/profile/UserProfileModal';
 import { usePostInteractions } from '@/hooks/usePostInteractions';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -59,6 +61,14 @@ const PostCard = forwardRef<HTMLDivElement, PostCardProps>(({ post, onDelete }, 
   const { isAdmin, isModerator } = useUserRole();
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
+  const openUserProfile = (userId: string) => {
+    setSelectedUserId(userId);
+    setProfileModalOpen(true);
+  };
   
   const {
     hasLiked,
@@ -126,16 +136,24 @@ const PostCard = forwardRef<HTMLDivElement, PostCardProps>(({ post, onDelete }, 
 
         {/* Header */}
         <div className="flex items-start gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-fused-purple/30 to-fused-blue/30 flex items-center justify-center border border-white/20 flex-shrink-0">
+          <button 
+            onClick={() => openUserProfile(post.user_id)}
+            className="w-12 h-12 rounded-full bg-gradient-to-br from-fused-purple/30 to-fused-blue/30 flex items-center justify-center border border-white/20 flex-shrink-0 hover:ring-2 hover:ring-fused-purple/50 transition-all cursor-pointer"
+          >
             {post.profiles?.avatar_url ? (
               <img src={post.profiles.avatar_url} className="w-full h-full rounded-full object-cover" alt="" />
             ) : (
               <span className="text-fused-purple font-semibold">{post.profiles?.ign?.[0]}</span>
             )}
-          </div>
+          </button>
           <div className="flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold">{post.profiles?.ign}</span>
+              <button 
+                onClick={() => openUserProfile(post.user_id)}
+                className="font-semibold hover:text-fused-purple transition-colors cursor-pointer"
+              >
+                {post.profiles?.ign}
+              </button>
               {post.profiles?.role === 'Admin' && <CheckCircle className="w-4 h-4 text-fused-purple" />}
               <RankBadge rank={post.profiles?.rank || 'Recruit'} size="sm" showLabel={false} />
               {post.is_featured && (
@@ -177,7 +195,18 @@ const PostCard = forwardRef<HTMLDivElement, PostCardProps>(({ post, onDelete }, 
 
         {/* Content */}
         <p className="whitespace-pre-wrap mb-4">{post.content}</p>
-        {post.image_url && <img src={post.image_url} className="rounded-xl mb-4 max-h-96 w-full object-cover" alt="" />}
+        {post.image_url && (
+          <button 
+            onClick={() => setLightboxOpen(true)} 
+            className="block w-full cursor-zoom-in"
+          >
+            <img 
+              src={post.image_url} 
+              className="rounded-xl mb-4 max-h-96 w-full object-cover hover:opacity-90 transition-opacity" 
+              alt="" 
+            />
+          </button>
+        )}
         {post.video_url && <video src={post.video_url} controls className="rounded-xl mb-4 max-h-96 w-full" />}
 
         {/* Actions */}
@@ -261,6 +290,20 @@ const PostCard = forwardRef<HTMLDivElement, PostCardProps>(({ post, onDelete }, 
             )}
           </div>
         )}
+
+        {/* Lightbox for images */}
+        <ImageLightbox 
+          src={post.image_url} 
+          open={lightboxOpen} 
+          onOpenChange={setLightboxOpen} 
+        />
+
+        {/* User profile modal */}
+        <UserProfileModal
+          userId={selectedUserId}
+          open={profileModalOpen}
+          onOpenChange={setProfileModalOpen}
+        />
       </GlassCard>
     </div>
   );

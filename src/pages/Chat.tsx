@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import BubbleCard from '@/components/ui/BubbleCard';
 import RankBadge from '@/components/ui/RankBadge';
 import CommunityStats from '@/components/ui/CommunityStats';
+import UserProfileModal from '@/components/profile/UserProfileModal';
 import { useChatMessages, type Channel } from '@/hooks/useChatMessages';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -31,9 +32,16 @@ export default function Chat() {
   const { isAdmin } = useUserRole();
   const [activeChannel, setActiveChannel] = useState<Channel>('general');
   const [newMessage, setNewMessage] = useState('');
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const { messages, isLoading, sendMessage } = useChatMessages(activeChannel);
+
+  const openUserProfile = (userId: string) => {
+    setSelectedUserId(userId);
+    setProfileModalOpen(true);
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -77,7 +85,7 @@ export default function Chat() {
           <CommunityStats />
         </motion.div>
 
-        <div className="grid lg:grid-cols-[240px_1fr] gap-6 h-[calc(100vh-220px)]">
+        <div className="grid lg:grid-cols-[240px_1fr] gap-6 h-[600px] max-h-[calc(100vh-220px)]">
           {/* Channels Sidebar */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -119,9 +127,9 @@ export default function Chat() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <BubbleCard className="h-full flex flex-col">
+            <BubbleCard className="h-full flex flex-col overflow-hidden">
               {/* Channel Header */}
-              <div className="px-6 py-4 border-b border-white/10">
+              <div className="px-6 py-4 border-b border-white/10 flex-shrink-0">
                 <div className="flex items-center gap-2">
                   <Hash className="w-5 h-5 text-muted-foreground" />
                   <span className="font-semibold">{activeChannel}</span>
@@ -131,8 +139,8 @@ export default function Chat() {
                 </p>
               </div>
 
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {/* Messages - Scrollable container */}
+              <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-full">
                     <div className="animate-spin w-8 h-8 border-2 border-fused-purple border-t-transparent rounded-full" />
@@ -145,7 +153,10 @@ export default function Chat() {
                 ) : (
                   messages.map((message) => (
                     <div key={message.id} className="flex gap-3">
-                      <div className="w-10 h-10 rounded-full bg-fused-purple/30 flex items-center justify-center border border-fused-purple/50 flex-shrink-0 overflow-hidden">
+                      <button
+                        onClick={() => openUserProfile(message.user_id)}
+                        className="w-10 h-10 rounded-full bg-fused-purple/30 flex items-center justify-center border border-fused-purple/50 flex-shrink-0 overflow-hidden hover:ring-2 hover:ring-fused-purple/50 transition-all cursor-pointer"
+                      >
                         {message.profiles?.avatar_url ? (
                           <img 
                             src={message.profiles.avatar_url} 
@@ -157,10 +168,15 @@ export default function Chat() {
                             {message.profiles?.ign?.[0] || '?'}
                           </span>
                         )}
-                      </div>
+                      </button>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold">{message.profiles?.ign || 'Unknown'}</span>
+                          <button
+                            onClick={() => openUserProfile(message.user_id)}
+                            className="font-semibold hover:text-fused-purple transition-colors cursor-pointer"
+                          >
+                            {message.profiles?.ign || 'Unknown'}
+                          </button>
                           <RankBadge rank={message.profiles?.rank || 'Recruit'} size="sm" showLabel={false} />
                           <span className={cn("text-xs", getRoleColor(message.profiles?.role || 'Member'))}>
                             {message.profiles?.role}
@@ -204,6 +220,13 @@ export default function Chat() {
             </BubbleCard>
           </motion.div>
         </div>
+
+        {/* User profile modal */}
+        <UserProfileModal
+          userId={selectedUserId}
+          open={profileModalOpen}
+          onOpenChange={setProfileModalOpen}
+        />
       </div>
     </div>
   );
