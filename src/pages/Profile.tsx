@@ -14,7 +14,9 @@ import {
   Camera,
   Save,
   Loader2,
-  Shield
+  Shield,
+  Palette,
+  Tag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,15 +27,19 @@ import RankBadge from '@/components/ui/RankBadge';
 import PointsDisplay from '@/components/ui/PointsDisplay';
 import GamingAccountButton from '@/components/ui/GamingAccountButton';
 import GamingConnectionModal from '@/components/profile/GamingConnectionModal';
+import ProfileCustomization from '@/components/profile/ProfileCustomization';
+import ProfileBackground from '@/components/ui/ProfileBackground';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useDailyCheckIn } from '@/hooks/useDailyCheckIn';
 import { useDiscordOAuth } from '@/hooks/useDiscordOAuth';
 import { useGamingAccounts } from '@/hooks/useGamingAccounts';
+import { SHOP_ITEMS } from '@/hooks/useShop';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { cn } from '@/lib/utils';
 
 const RANK_THRESHOLDS = {
   'Recruit': 0,
@@ -59,6 +65,7 @@ export default function Profile() {
   const [editedIgn, setEditedIgn] = useState('');
   const [editedBio, setEditedBio] = useState('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [showCustomization, setShowCustomization] = useState(false);
   const [connectionModal, setConnectionModal] = useState<{
     isOpen: boolean;
     platform: 'epic' | 'steam' | 'riot';
@@ -138,6 +145,11 @@ export default function Profile() {
     );
   }
 
+  const equippedItems = (profile.equipped_items as Record<string, string>) || {};
+  const equippedBackground = equippedItems.background || null;
+  const equippedClanTag = equippedItems.clan_tag ? SHOP_ITEMS.find(i => i.id === equippedItems.clan_tag) : null;
+  const equippedBadge = equippedItems.badge ? SHOP_ITEMS.find(i => i.id === equippedItems.badge) : null;
+
   const currentRankIndex = ranks.findIndex(([name]) => name === profile.rank);
   const nextRank = ranks[currentRankIndex + 1];
   const currentThreshold = RANK_THRESHOLDS[profile.rank as keyof typeof RANK_THRESHOLDS] || 0;
@@ -156,150 +168,175 @@ export default function Profile() {
   return (
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Profile Header */}
+        {/* Profile Header with Background */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <BubbleCard className="p-8" glow>
-            <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-              {/* Avatar */}
-              <div className="relative group">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-fused-blue to-fused-purple flex items-center justify-center text-3xl font-bold border-4 border-fused-purple/30 overflow-hidden">
-                  {profile.avatar_url ? (
-                    <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    profile.ign?.[0]?.toUpperCase() || '?'
-                  )}
-                </div>
-                <button 
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploadingAvatar}
-                  className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                >
-                  {uploadingAvatar ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    <Camera className="w-6 h-6" />
-                  )}
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarUpload}
-                  className="hidden"
-                />
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-3 mb-2 flex-wrap">
-                  {isEditing ? (
-                    <Input
-                      value={editedIgn}
-                      onChange={(e) => setEditedIgn(e.target.value)}
-                      className="max-w-[200px] bg-white/5"
-                      placeholder="Your IGN"
-                    />
-                  ) : (
-                    <h1 className="text-2xl font-bold">{profile.ign}</h1>
-                  )}
-                  <RankBadge rank={profile.rank} />
-                  {isAdmin && (
-                    <span className="admin-badge">
-                      <Shield className="w-3 h-3" />
-                      ADMIN
-                    </span>
-                  )}
-                </div>
-                
-                {isEditing ? (
-                  <Textarea
-                    value={editedBio}
-                    onChange={(e) => setEditedBio(e.target.value)}
-                    className="bg-white/5 mb-3"
-                    placeholder="Your bio..."
-                    rows={2}
+          <ProfileBackground 
+            backgroundId={equippedBackground}
+            className="rounded-2xl overflow-hidden"
+          >
+            <BubbleCard className="p-8 bg-black/40 backdrop-blur-sm" glow>
+              <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
+                {/* Avatar */}
+                <div className="relative group">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-fused-blue to-fused-purple flex items-center justify-center text-3xl font-bold border-4 border-fused-purple/30 overflow-hidden">
+                    {profile.avatar_url ? (
+                      <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      profile.ign?.[0]?.toUpperCase() || '?'
+                    )}
+                  </div>
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingAvatar}
+                    className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                  >
+                    {uploadingAvatar ? (
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                    ) : (
+                      <Camera className="w-6 h-6" />
+                    )}
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
                   />
-                ) : (
-                  <p className="text-muted-foreground mb-4">{profile.bio || 'No bio yet...'}</p>
-                )}
-                
-                <div className="flex items-center justify-center md:justify-start gap-4">
-                  <PointsDisplay points={profile.fused_points || 0} size="lg" />
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 text-center md:text-left">
+                  <div className="flex items-center justify-center md:justify-start gap-3 mb-2 flex-wrap">
+                    {equippedClanTag && (
+                      <span className="text-fused-purple font-bold">{equippedClanTag.preview_value}</span>
+                    )}
+                    {isEditing ? (
+                      <Input
+                        value={editedIgn}
+                        onChange={(e) => setEditedIgn(e.target.value)}
+                        className="max-w-[200px] bg-white/5"
+                        placeholder="Your IGN"
+                      />
+                    ) : (
+                      <h1 className="text-2xl font-bold">{profile.ign}</h1>
+                    )}
+                    <RankBadge rank={profile.rank} />
+                    {isAdmin && (
+                      <span className="admin-badge">
+                        <Shield className="w-3 h-3" />
+                        ADMIN
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Equipped Badge */}
+                  {equippedBadge && (
+                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                      <span className="text-lg">{equippedBadge.preview_value}</span>
+                    </div>
+                  )}
                   
                   {isEditing ? (
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => updateProfile.mutate({ ign: editedIgn, bio: editedBio })}
-                        disabled={updateProfile.isPending}
-                        className="bg-fused-purple hover:bg-fused-purple/80"
-                      >
-                        {updateProfile.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setIsEditing(false)}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
+                    <Textarea
+                      value={editedBio}
+                      onChange={(e) => setEditedBio(e.target.value)}
+                      className="bg-white/5 mb-3"
+                      placeholder="Your bio..."
+                      rows={2}
+                    />
                   ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setEditedIgn(profile.ign || '');
-                        setEditedBio(profile.bio || '');
-                        setIsEditing(true);
-                      }}
-                      className="border-fused-purple/30"
-                    >
-                      <Edit2 className="w-4 h-4 mr-2" />
-                      Edit
-                    </Button>
+                    <p className="text-muted-foreground mb-4">{profile.bio || 'No bio yet...'}</p>
                   )}
+                  
+                  <div className="flex items-center justify-center md:justify-start gap-3 flex-wrap">
+                    <PointsDisplay points={profile.fused_points || 0} size="lg" />
+                    
+                    {isEditing ? (
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => updateProfile.mutate({ ign: editedIgn, bio: editedBio })}
+                          disabled={updateProfile.isPending}
+                          className="bg-fused-purple hover:bg-fused-purple/80"
+                        >
+                          {updateProfile.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setIsEditing(false)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setEditedIgn(profile.ign || '');
+                            setEditedBio(profile.bio || '');
+                            setIsEditing(true);
+                          }}
+                          className="border-fused-purple/30"
+                        >
+                          <Edit2 className="w-4 h-4 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => setShowCustomization(true)}
+                          className="bg-gradient-to-r from-fused-purple to-fused-pink hover:opacity-90 text-white"
+                        >
+                          <Palette className="w-4 h-4 mr-2" />
+                          Customize
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Daily Check-in */}
+                <div className="w-full md:w-auto">
+                  <BubbleCard className="p-4 text-center bg-black/40">
+                    <div className="flex items-center gap-2 justify-center mb-3">
+                      <Calendar className="w-5 h-5 text-fused-purple" />
+                      <span className="font-semibold">Daily Check-in</span>
+                    </div>
+                    {hasCheckedInToday ? (
+                      <div className="flex items-center gap-2 justify-center text-green-400">
+                        <CheckCircle className="w-5 h-5" />
+                        <span>Claimed!</span>
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={() => checkIn.mutate()}
+                        disabled={checkIn.isPending}
+                        className="w-full bg-gradient-to-r from-fused-blue to-fused-purple hover:opacity-90 text-foreground"
+                      >
+                        {checkIn.isPending ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Gift className="w-4 h-4 mr-2" />
+                            Claim +{10 + Math.min(currentStreak * 2, 50)} FP
+                          </>
+                        )}
+                      </Button>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-2">
+                      🔥 {currentStreak} day streak!
+                    </p>
+                  </BubbleCard>
                 </div>
               </div>
-
-              {/* Daily Check-in */}
-              <div className="w-full md:w-auto">
-                <BubbleCard className="p-4 text-center">
-                  <div className="flex items-center gap-2 justify-center mb-3">
-                    <Calendar className="w-5 h-5 text-fused-purple" />
-                    <span className="font-semibold">Daily Check-in</span>
-                  </div>
-                  {hasCheckedInToday ? (
-                    <div className="flex items-center gap-2 justify-center text-green-400">
-                      <CheckCircle className="w-5 h-5" />
-                      <span>Claimed!</span>
-                    </div>
-                  ) : (
-                    <Button
-                      onClick={() => checkIn.mutate()}
-                      disabled={checkIn.isPending}
-                      className="w-full bg-gradient-to-r from-fused-blue to-fused-purple hover:opacity-90 text-foreground"
-                    >
-                      {checkIn.isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <>
-                          <Gift className="w-4 h-4 mr-2" />
-                          Claim +{10 + Math.min(currentStreak * 2, 50)} FP
-                        </>
-                      )}
-                    </Button>
-                  )}
-                  <p className="text-xs text-muted-foreground mt-2">
-                    🔥 {currentStreak} day streak!
-                  </p>
-                </BubbleCard>
-              </div>
-            </div>
-          </BubbleCard>
+            </BubbleCard>
+          </ProfileBackground>
         </motion.div>
 
         {/* Gaming Connections */}
@@ -413,6 +450,13 @@ export default function Profile() {
         platform={connectionModal.platform}
         onConnect={handleGamingConnect}
         isLoading={gamingConnecting === connectionModal.platform}
+      />
+
+      {/* Profile Customization Modal */}
+      <ProfileCustomization
+        open={showCustomization}
+        onOpenChange={setShowCustomization}
+        equippedItems={equippedItems}
       />
     </div>
   );
