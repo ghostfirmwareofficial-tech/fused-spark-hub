@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSearchParams } from 'react-router-dom';
 import { 
   Tag,
   Award,
@@ -78,7 +77,6 @@ const POINTS_BUNDLES = [
 
 export default function Shop() {
   const { user } = useAuth();
-  const [searchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState<Category>('all');
   const [purchasingBundle, setPurchasingBundle] = useState<string | null>(null);
   const { 
@@ -89,20 +87,6 @@ export default function Shop() {
     isOwned,
     purchaseItem 
   } = useShop();
-
-  // Handle payment success/cancel from URL params
-  useEffect(() => {
-    const payment = searchParams.get('payment');
-    const points = searchParams.get('points');
-    
-    if (payment === 'success' && points) {
-      toast.success(`Payment successful!`, {
-        description: `${points} Fused Points will be added to your account shortly.`,
-      });
-    } else if (payment === 'cancelled') {
-      toast.info('Payment cancelled');
-    }
-  }, [searchParams]);
 
   const handleBuyPoints = async (bundleId: string) => {
     if (!user) {

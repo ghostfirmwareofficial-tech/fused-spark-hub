@@ -28,6 +28,7 @@ import PointsDisplay from '@/components/ui/PointsDisplay';
 import GamingAccountButton from '@/components/ui/GamingAccountButton';
 import GamingConnectionModal from '@/components/profile/GamingConnectionModal';
 import ProfileCustomization from '@/components/profile/ProfileCustomization';
+import FortniteStats from '@/components/profile/FortniteStats';
 import ProfileBackground from '@/components/ui/ProfileBackground';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
@@ -383,6 +384,11 @@ export default function Profile() {
             </div>
           </BubbleCard>
         </motion.div>
+
+        {/* Fortnite Stats - Show if Epic Games connected */}
+        {profile.epic_games_id && (
+          <FortniteStats epicUsername={profile.epic_games_id} />
+        )}
 
         {/* Rank Progress */}
         <motion.div
