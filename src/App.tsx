@@ -13,6 +13,7 @@ import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import DiscordCallback from "./pages/DiscordCallback";
+import EpicCallback from "./pages/EpicCallback";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/auth/discord/callback" element={<DiscordCallback />} />
+              <Route path="/epic-callback" element={<EpicCallback />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
