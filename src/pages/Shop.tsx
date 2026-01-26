@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Tag,
   Award,
@@ -11,7 +12,9 @@ import {
   Check,
   ShoppingBag,
   Crown,
-  Loader2
+  Loader2,
+  CreditCard,
+  Gift
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PointsDisplay from '@/components/ui/PointsDisplay';
@@ -19,6 +22,8 @@ import { BackgroundPreview } from '@/components/ui/ProfileBackground';
 import { useShop, SHOP_ITEMS, ShopItem } from '@/hooks/useShop';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 type Category = 'all' | 'clan_tag' | 'badge' | 'nameplate' | 'boost' | 'background';
 type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
@@ -64,9 +69,18 @@ const rarityConfig: Record<Rarity, { label: string; gradient: string; border: st
   },
 };
 
+// Points bundles for purchase
+const POINTS_BUNDLES = [
+  { id: 'bundle_120', points: 120, price: 1, popular: false },
+  { id: 'bundle_500', points: 500, price: 5, popular: true },
+  { id: 'bundle_1200', points: 1200, price: 10, popular: false },
+];
+
 export default function Shop() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState<Category>('all');
+  const [purchasingBundle, setPurchasingBundle] = useState<string | null>(null);
   const { 
     userPoints, 
     purchasedItems, 
@@ -75,6 +89,44 @@ export default function Shop() {
     isOwned,
     purchaseItem 
   } = useShop();
+
+  // Handle payment success/cancel from URL params
+  useEffect(() => {
+    const payment = searchParams.get('payment');
+    const points = searchParams.get('points');
+    
+    if (payment === 'success' && points) {
+      toast.success(`Payment successful!`, {
+        description: `${points} Fused Points will be added to your account shortly.`,
+      });
+    } else if (payment === 'cancelled') {
+      toast.info('Payment cancelled');
+    }
+  }, [searchParams]);
+
+  const handleBuyPoints = async (bundleId: string) => {
+    if (!user) {
+      toast.error('Please log in to purchase points');
+      return;
+    }
+
+    setPurchasingBundle(bundleId);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-points-checkout', {
+        body: { bundleId },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error('Failed to start checkout');
+    } finally {
+      setPurchasingBundle(null);
+    }
+  };
 
   const filteredItems = activeCategory === 'all' 
     ? SHOP_ITEMS 
@@ -137,6 +189,68 @@ export default function Shop() {
                 <category.icon className="w-4 h-4 relative z-10" />
                 <span className="text-sm font-medium relative z-10">{category.name}</span>
               </motion.button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Buy Points Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-10"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <CreditCard className="w-6 h-6 text-fused-pink" />
+            <h2 className="text-xl font-bold">Buy Fused Points</h2>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {POINTS_BUNDLES.map((bundle) => (
+              <motion.div
+                key={bundle.id}
+                whileHover={{ scale: 1.02, y: -3 }}
+                className={cn(
+                  "relative rounded-xl p-5 backdrop-blur-xl border-2 transition-all",
+                  bundle.popular
+                    ? "bg-gradient-to-br from-fused-purple/30 to-fused-pink/20 border-fused-purple/50 shadow-[0_0_30px_rgba(139,92,246,0.2)]"
+                    : "bg-white/5 border-white/10 hover:border-white/20"
+                )}
+              >
+                {bundle.popular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-fused-purple to-fused-pink text-white">
+                    Best Value
+                  </span>
+                )}
+                <div className="text-center space-y-3">
+                  <div className="flex items-center justify-center gap-2">
+                    <Gift className="w-5 h-5 text-yellow-400" />
+                    <span className="text-2xl font-bold text-yellow-400">{bundle.points.toLocaleString()}</span>
+                    <span className="text-sm text-yellow-400/70">FP</span>
+                  </div>
+                  <p className="text-3xl font-bold">${bundle.price}</p>
+                  <Button
+                    onClick={() => handleBuyPoints(bundle.id)}
+                    disabled={purchasingBundle === bundle.id || !user}
+                    className={cn(
+                      "w-full",
+                      bundle.popular
+                        ? "bg-gradient-to-r from-fused-purple to-fused-pink hover:opacity-90"
+                        : "bg-white/10 hover:bg-white/20"
+                    )}
+                  >
+                    {purchasingBundle === bundle.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : !user ? (
+                      'Login to Buy'
+                    ) : (
+                      <>
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        Buy Now
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>
