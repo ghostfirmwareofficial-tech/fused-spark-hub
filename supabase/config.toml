@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.create-points-checkout]
 verify_jwt = false
+
+[functions.fetch-fortnite-stats]
+verify_jwt = false
