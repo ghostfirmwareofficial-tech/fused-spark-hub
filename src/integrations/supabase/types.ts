@@ -681,6 +681,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      transfer_fused_points: {
+        Args: { _amount: number; _message?: string; _receiver_id: string }
+        Returns: {
+          receiver_balance: number
+          sender_balance: number
+          transfer_id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
