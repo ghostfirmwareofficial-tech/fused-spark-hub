@@ -16,7 +16,8 @@ import {
   Loader2,
   Shield,
   Palette,
-  Tag
+  Tag,
+  Send
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +31,7 @@ import GamingConnectionModal from '@/components/profile/GamingConnectionModal';
 import ProfileCustomization from '@/components/profile/ProfileCustomization';
 import FortniteStats from '@/components/profile/FortniteStats';
 import ProfileBackground from '@/components/ui/ProfileBackground';
+import { SendPointsModal } from '@/components/points/SendPointsModal';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -255,7 +257,14 @@ export default function Profile() {
                   
                   <div className="flex items-center justify-center md:justify-start gap-3 flex-wrap">
                     <PointsDisplay points={profile.fused_points || 0} size="lg" />
-                    
+                    <SendPointsModal
+                      trigger={
+                        <Button size="sm" variant="outline" className="border-primary/30">
+                          <Send className="w-4 h-4 mr-2" />
+                          Send FP
+                        </Button>
+                      }
+                    />
                     {isEditing ? (
                       <div className="flex gap-2">
                         <Button

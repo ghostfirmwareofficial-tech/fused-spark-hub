@@ -126,29 +126,40 @@ export function usePosts() {
 
       if (error) throw error;
 
-      // Award points for posting - get current points and increment
+      // Award points for posting - only once per day
+      const today = new Date().toISOString().split('T')[0];
       const { data: profile } = await supabase
         .from('profiles')
-        .select('fused_points, total_posts')
+        .select('fused_points, total_posts, last_post_points_date')
         .eq('user_id', user.id)
         .single();
 
       if (profile) {
+        const alreadyEarnedToday = profile.last_post_points_date === today;
+        const pointsToAdd = alreadyEarnedToday ? 0 : 25;
+        
         await supabase
           .from('profiles')
           .update({ 
-            fused_points: profile.fused_points + 25,
-            total_posts: profile.total_posts + 1
+            fused_points: profile.fused_points + pointsToAdd,
+            total_posts: profile.total_posts + 1,
+            ...(pointsToAdd > 0 && { last_post_points_date: today })
           })
           .eq('user_id', user.id);
+          
+        return { pointsAwarded: pointsToAdd };
       }
 
-      return data;
+      return { pointsAwarded: 0 };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      toast.success('Post created! +25 FP');
+      if (data.pointsAwarded > 0) {
+        toast.success('Post created! +25 FP');
+      } else {
+        toast.success('Post created!', { description: 'Daily post bonus already claimed' });
+      }
     },
     onError: (error) => {
       toast.error('Failed to create post', { description: error.message });

@@ -175,6 +175,33 @@ export type Database = {
         }
         Relationships: []
       }
+      point_transfers: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          message: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          message?: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          message?: string | null
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
       post_likes: {
         Row: {
           created_at: string
@@ -298,6 +325,7 @@ export type Database = {
           ign: string
           is_verified: boolean
           last_check_in: string | null
+          last_post_points_date: string | null
           longest_streak: number
           purchased_items: string[] | null
           rank: string
@@ -329,6 +357,7 @@ export type Database = {
           ign: string
           is_verified?: boolean
           last_check_in?: string | null
+          last_post_points_date?: string | null
           longest_streak?: number
           purchased_items?: string[] | null
           rank?: string
@@ -360,6 +389,7 @@ export type Database = {
           ign?: string
           is_verified?: boolean
           last_check_in?: string | null
+          last_post_points_date?: string | null
           longest_streak?: number
           purchased_items?: string[] | null
           rank?: string
