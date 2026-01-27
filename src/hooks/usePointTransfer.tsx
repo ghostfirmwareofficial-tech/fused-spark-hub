@@ -56,7 +56,7 @@ export function usePointTransfer() {
       if (amount <= 0) throw new Error('Amount must be positive');
       if (profile.fused_points < amount) throw new Error('Insufficient points');
 
-      // Check receiver exists
+      // Check receiver exists and get current balance
       const { data: receiver, error: receiverError } = await supabase
         .from('profiles')
         .select('user_id, ign, fused_points')
@@ -65,23 +65,17 @@ export function usePointTransfer() {
       
       if (receiverError || !receiver) throw new Error('User not found');
 
-      // Deduct from sender
-      const { error: senderError } = await supabase
+      // Get sender's current balance to ensure we have the latest
+      const { data: currentSender, error: senderFetchError } = await supabase
         .from('profiles')
-        .update({ fused_points: profile.fused_points - amount })
-        .eq('user_id', user.id);
+        .select('fused_points')
+        .eq('user_id', user.id)
+        .single();
       
-      if (senderError) throw senderError;
+      if (senderFetchError || !currentSender) throw new Error('Could not verify balance');
+      if (currentSender.fused_points < amount) throw new Error('Insufficient points');
 
-      // Add to receiver
-      const { error: receiverUpdateError } = await supabase
-        .from('profiles')
-        .update({ fused_points: receiver.fused_points + amount })
-        .eq('user_id', receiverUserId);
-      
-      if (receiverUpdateError) throw receiverUpdateError;
-
-      // Log the transfer
+      // Log the transfer first (this validates RLS)
       const { error: transferError } = await supabase
         .from('point_transfers')
         .insert({
@@ -92,6 +86,22 @@ export function usePointTransfer() {
         });
       
       if (transferError) throw transferError;
+
+      // Deduct from sender using current balance
+      const { error: senderError } = await supabase
+        .from('profiles')
+        .update({ fused_points: currentSender.fused_points - amount })
+        .eq('user_id', user.id);
+      
+      if (senderError) throw senderError;
+
+      // Add to receiver using their current balance
+      const { error: receiverUpdateError } = await supabase
+        .from('profiles')
+        .update({ fused_points: receiver.fused_points + amount })
+        .eq('user_id', receiverUserId);
+      
+      if (receiverUpdateError) throw receiverUpdateError;
 
       return { receiver: receiver.ign, amount };
     },
