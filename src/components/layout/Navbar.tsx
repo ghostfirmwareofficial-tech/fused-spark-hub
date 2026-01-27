@@ -1,19 +1,13 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Home,
-  Users,
-  MessageSquare,
-  ShoppingBag,
-  FileText,
   User,
   Menu,
   X,
   Zap,
   LogOut,
   Shield,
-  Trophy,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -35,10 +29,33 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const navRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const navContainerRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const { user, signOut, loading } = useAuth();
   const { data: profile } = useProfile();
   const { isAdmin } = useUserRole();
+
+  const updateIndicator = useCallback(() => {
+    const activeIndex = navItems.findIndex(item => item.path === location.pathname);
+    if (activeIndex !== -1 && navRefs.current[activeIndex] && navContainerRef.current) {
+      const activeEl = navRefs.current[activeIndex];
+      const containerRect = navContainerRef.current.getBoundingClientRect();
+      const activeRect = activeEl!.getBoundingClientRect();
+      
+      setIndicatorStyle({
+        left: activeRect.left - containerRect.left,
+        width: activeRect.width,
+      });
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [updateIndicator]);
 
   const openAuthModal = (mode: 'login' | 'signup') => {
     setAuthMode(mode);
@@ -67,35 +84,30 @@ export default function Navbar() {
 
             {/* Pill Navigation - Desktop */}
             <div className="hidden md:flex items-center justify-center flex-1">
-              <div className="pill-nav relative">
-                {/* Animated sliding indicator */}
-                {navItems.map((item, index) => (
-                  location.pathname === item.path && (
-                    <motion.div
-                      key="indicator"
-                      layoutId="nav-indicator"
-                      className="absolute top-1 bottom-1 rounded-full bg-primary"
-                      style={{
-                        left: `calc(${index * 100 / navItems.length}% + 4px)`,
-                        width: `calc(${100 / navItems.length}% - 8px)`,
-                      }}
-                      initial={false}
-                      transition={{
-                        type: "spring",
-                        stiffness: 400,
-                        damping: 25,
-                        mass: 0.8,
-                      }}
-                    />
-                  )
-                ))}
+              <div ref={navContainerRef} className="pill-nav relative">
+                {/* Animated sliding indicator that fits content */}
+                <motion.div
+                  className="absolute top-1 bottom-1 rounded-full bg-primary"
+                  initial={false}
+                  animate={{
+                    left: indicatorStyle.left,
+                    width: indicatorStyle.width,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30,
+                    mass: 0.8,
+                  }}
+                />
                 
-                {navItems.map((item) => (
+                {navItems.map((item, index) => (
                   <Link
                     key={item.path}
+                    ref={(el) => { navRefs.current[index] = el; }}
                     to={item.path}
                     className={cn(
-                      "pill-nav-item relative z-10",
+                      "pill-nav-item relative z-10 whitespace-nowrap",
                       location.pathname === item.path
                         ? "text-primary-foreground"
                         : "pill-nav-item-inactive"
