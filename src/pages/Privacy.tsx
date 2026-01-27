@@ -129,11 +129,20 @@ const Privacy = () => {
 
           <section>
             <h2 className="text-2xl font-semibold mb-4">11. Contact Us</h2>
-            <p className="leading-relaxed">
-              If you have any questions about this privacy policy, how we handle your data, or wish to 
-              exercise your data rights, please contact us through our Discord community or via the 
-              contact options on our platform at fusedup.org.
+            <p className="leading-relaxed mb-4">
+              For any questions about this privacy policy, data protection inquiries, or to exercise your data rights, please contact us:
             </p>
+            <div className="bg-muted/50 rounded-lg p-6 space-y-3">
+              <p><strong>Data Protection Contact:</strong></p>
+              <ul className="list-disc list-inside space-y-2 ml-4">
+                <li><strong>Email:</strong> <a href="mailto:privacy@fusedup.org" className="text-primary hover:underline">privacy@fusedup.org</a></li>
+                <li><strong>Website:</strong> <a href="https://fusedup.org" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">fusedup.org</a></li>
+                <li><strong>Discord:</strong> Join our community server for direct support</li>
+              </ul>
+              <p className="text-sm text-muted-foreground mt-4">
+                We aim to respond to all data protection inquiries within 30 days.
+              </p>
+            </div>
           </section>
         </div>
 
