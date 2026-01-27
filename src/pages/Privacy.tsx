@@ -135,7 +135,7 @@ const Privacy = () => {
             <div className="bg-muted/50 rounded-lg p-6 space-y-3">
               <p><strong>Data Protection Contact:</strong></p>
               <ul className="list-disc list-inside space-y-2 ml-4">
-                <li><strong>Email:</strong> <a href="mailto:privacy@fusedup.org" className="text-primary hover:underline">privacy@fusedup.org</a></li>
+                <li><strong>Email:</strong> <a href="mailto:fusedupofficial@proton.me" className="text-primary hover:underline">fusedupofficial@proton.me</a></li>
                 <li><strong>Website:</strong> <a href="https://fusedup.org" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">fusedup.org</a></li>
                 <li><strong>Discord:</strong> Join our community server for direct support</li>
               </ul>
