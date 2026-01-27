@@ -17,6 +17,7 @@ import DiscordCallback from "./pages/DiscordCallback";
 import EpicCallback from "./pages/EpicCallback";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
+import Privacy from "./pages/Privacy";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/auth/discord/callback" element={<DiscordCallback />} />
               <Route path="/epic-callback" element={<EpicCallback />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
+              <Route path="/privacy" element={<Privacy />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
