@@ -13,6 +13,7 @@ import {
   Zap,
   LogOut,
   Shield,
+  Trophy,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -24,6 +25,7 @@ import AuthModal from '@/components/auth/AuthModal';
 const navItems = [
   { name: 'Home', path: '/' },
   { name: 'Feed', path: '/feed' },
+  { name: 'Tournaments', path: '/tournaments' },
   { name: 'Chat', path: '/chat' },
   { name: 'Shop', path: '/shop' },
   { name: 'Apply', path: '/apply' },

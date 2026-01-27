@@ -5,7 +5,8 @@ import {
   Users, 
   Crown,
   Loader2,
-  Search
+  Search,
+  Trophy
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import BubbleCard from '@/components/ui/BubbleCard';
@@ -16,6 +17,7 @@ import ContentModeration from '@/components/admin/ContentModeration';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import ApplicationsManagement from '@/components/admin/ApplicationsManagement';
 import RoleManagement from '@/components/admin/RoleManagement';
+import TournamentManagement from '@/components/admin/TournamentManagement';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
@@ -95,6 +97,11 @@ export default function AdminPanel() {
         {/* Applications Management */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <ApplicationsManagement />
+        </motion.div>
+
+        {/* Tournament Management */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17 }}>
+          <TournamentManagement />
         </motion.div>
 
         {/* Content Moderation */}
