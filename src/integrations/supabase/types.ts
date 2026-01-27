@@ -255,6 +255,30 @@ export type Database = {
         }
         Relationships: []
       }
+      prize_tiers: {
+        Row: {
+          created_at: string
+          id: string
+          max_participants: number | null
+          min_participants: number
+          prize_pool: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          max_participants?: number | null
+          min_participants: number
+          prize_pool: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          max_participants?: number | null
+          min_participants?: number
+          prize_pool?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -419,6 +443,119 @@ export type Database = {
         }
         Relationships: []
       }
+      tournament_entries: {
+        Row: {
+          created_at: string
+          current_kills: number | null
+          current_wins: number | null
+          entry_paid: boolean
+          epic_games_id: string
+          id: string
+          initial_kills: number | null
+          initial_wins: number | null
+          payout_notes: string | null
+          payout_status: string | null
+          placement: number | null
+          prize_amount: number | null
+          total_score: number | null
+          tournament_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_kills?: number | null
+          current_wins?: number | null
+          entry_paid?: boolean
+          epic_games_id: string
+          id?: string
+          initial_kills?: number | null
+          initial_wins?: number | null
+          payout_notes?: string | null
+          payout_status?: string | null
+          placement?: number | null
+          prize_amount?: number | null
+          total_score?: number | null
+          tournament_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_kills?: number | null
+          current_wins?: number | null
+          entry_paid?: boolean
+          epic_games_id?: string
+          id?: string
+          initial_kills?: number | null
+          initial_wins?: number | null
+          payout_notes?: string | null
+          payout_status?: string | null
+          placement?: number | null
+          prize_amount?: number | null
+          total_score?: number | null
+          tournament_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_entries_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournaments: {
+        Row: {
+          base_prize_pool: number
+          created_at: string
+          created_by: string
+          current_prize_pool: number
+          description: string | null
+          ends_at: string | null
+          entry_fee: number
+          id: string
+          max_participants: number | null
+          name: string
+          starts_at: string | null
+          status: Database["public"]["Enums"]["tournament_status"]
+          updated_at: string
+        }
+        Insert: {
+          base_prize_pool?: number
+          created_at?: string
+          created_by: string
+          current_prize_pool?: number
+          description?: string | null
+          ends_at?: string | null
+          entry_fee?: number
+          id?: string
+          max_participants?: number | null
+          name: string
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["tournament_status"]
+          updated_at?: string
+        }
+        Update: {
+          base_prize_pool?: number
+          created_at?: string
+          created_by?: string
+          current_prize_pool?: number
+          description?: string | null
+          ends_at?: string | null
+          entry_fee?: number
+          id?: string
+          max_participants?: number | null
+          name?: string
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["tournament_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_follows: {
         Row: {
           created_at: string
@@ -522,6 +659,12 @@ export type Database = {
       game_mode: "ranked" | "unranked" | "casual"
       moderation_action_type: "ban" | "timeout" | "restrict" | "kick" | "warn"
       team_size: "duos" | "trios" | "quads"
+      tournament_status:
+        | "draft"
+        | "registration"
+        | "active"
+        | "completed"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -655,6 +798,13 @@ export const Constants = {
       game_mode: ["ranked", "unranked", "casual"],
       moderation_action_type: ["ban", "timeout", "restrict", "kick", "warn"],
       team_size: ["duos", "trios", "quads"],
+      tournament_status: [
+        "draft",
+        "registration",
+        "active",
+        "completed",
+        "cancelled",
+      ],
     },
   },
 } as const

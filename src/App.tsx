@@ -12,6 +12,7 @@ import Apply from "./pages/Apply";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
+import Tournaments from "./pages/Tournaments";
 import DiscordCallback from "./pages/DiscordCallback";
 import EpicCallback from "./pages/EpicCallback";
 import PaymentSuccess from "./pages/PaymentSuccess";
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/chat" element={<Chat />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/tournaments" element={<Tournaments />} />
               <Route path="/auth/discord/callback" element={<DiscordCallback />} />
               <Route path="/epic-callback" element={<EpicCallback />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
