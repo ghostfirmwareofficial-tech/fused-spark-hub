@@ -3,7 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
-import { useEffect } from 'react';
 
 interface TransferInput {
   receiverUserId: string;
@@ -48,49 +47,6 @@ export function usePointTransfer() {
     },
     enabled: !!user,
   });
-
-  // Subscribe to realtime incoming transfers
-  useEffect(() => {
-    if (!user) return;
-
-    const channel = supabase
-      .channel('point-transfers-incoming')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'point_transfers',
-          filter: `receiver_id=eq.${user.id}`,
-        },
-        async (payload) => {
-          const newTransfer = payload.new as { sender_id: string; amount: number; message: string | null };
-          
-          // Fetch sender profile
-          const { data: senderProfile } = await supabase
-            .from('profiles')
-            .select('ign')
-            .eq('user_id', newTransfer.sender_id)
-            .single();
-
-          const senderName = senderProfile?.ign || 'Someone';
-          
-          toast.success(`💰 You received ${newTransfer.amount} FP from ${senderName}!`, {
-            description: newTransfer.message || undefined,
-            duration: 6000,
-          });
-
-          // Invalidate queries to refresh balance and history
-          queryClient.invalidateQueries({ queryKey: ['profile'] });
-          queryClient.invalidateQueries({ queryKey: ['point-transfers'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user, queryClient]);
 
   // Send points using secure DB function
   const sendPoints = useMutation({
