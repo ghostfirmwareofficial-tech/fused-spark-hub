@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
+import { useEffect } from 'react';
 
 interface TransferInput {
   receiverUserId: string;
@@ -48,62 +49,75 @@ export function usePointTransfer() {
     enabled: !!user,
   });
 
-  // Send points to another user
+  // Subscribe to realtime incoming transfers
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('point-transfers-incoming')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'point_transfers',
+          filter: `receiver_id=eq.${user.id}`,
+        },
+        async (payload) => {
+          const newTransfer = payload.new as { sender_id: string; amount: number; message: string | null };
+          
+          // Fetch sender profile
+          const { data: senderProfile } = await supabase
+            .from('profiles')
+            .select('ign')
+            .eq('user_id', newTransfer.sender_id)
+            .single();
+
+          const senderName = senderProfile?.ign || 'Someone';
+          
+          toast.success(`💰 You received ${newTransfer.amount} FP from ${senderName}!`, {
+            description: newTransfer.message || undefined,
+            duration: 6000,
+          });
+
+          // Invalidate queries to refresh balance and history
+          queryClient.invalidateQueries({ queryKey: ['profile'] });
+          queryClient.invalidateQueries({ queryKey: ['point-transfers'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, queryClient]);
+
+  // Send points using secure DB function
   const sendPoints = useMutation({
     mutationFn: async ({ receiverUserId, amount, message }: TransferInput) => {
-      if (!user || !profile) throw new Error('Not authenticated');
-      if (receiverUserId === user.id) throw new Error('Cannot send points to yourself');
-      if (amount <= 0) throw new Error('Amount must be positive');
-      if (profile.fused_points < amount) throw new Error('Insufficient points');
+      if (!user) throw new Error('Not authenticated');
 
-      // Check receiver exists and get current balance
-      const { data: receiver, error: receiverError } = await supabase
+      // Call the secure database function
+      const { data, error } = await supabase.rpc('transfer_fused_points', {
+        _receiver_id: receiverUserId,
+        _amount: amount,
+        _message: message || null,
+      });
+
+      if (error) {
+        // Extract message from Postgres exception
+        const msg = error.message || 'Transfer failed';
+        throw new Error(msg);
+      }
+
+      // Get receiver name for success message
+      const { data: receiverProfile } = await supabase
         .from('profiles')
-        .select('user_id, ign, fused_points')
+        .select('ign')
         .eq('user_id', receiverUserId)
         .single();
-      
-      if (receiverError || !receiver) throw new Error('User not found');
 
-      // Get sender's current balance to ensure we have the latest
-      const { data: currentSender, error: senderFetchError } = await supabase
-        .from('profiles')
-        .select('fused_points')
-        .eq('user_id', user.id)
-        .single();
-      
-      if (senderFetchError || !currentSender) throw new Error('Could not verify balance');
-      if (currentSender.fused_points < amount) throw new Error('Insufficient points');
-
-      // Log the transfer first (this validates RLS)
-      const { error: transferError } = await supabase
-        .from('point_transfers')
-        .insert({
-          sender_id: user.id,
-          receiver_id: receiverUserId,
-          amount,
-          message: message || null,
-        });
-      
-      if (transferError) throw transferError;
-
-      // Deduct from sender using current balance
-      const { error: senderError } = await supabase
-        .from('profiles')
-        .update({ fused_points: currentSender.fused_points - amount })
-        .eq('user_id', user.id);
-      
-      if (senderError) throw senderError;
-
-      // Add to receiver using their current balance
-      const { error: receiverUpdateError } = await supabase
-        .from('profiles')
-        .update({ fused_points: receiver.fused_points + amount })
-        .eq('user_id', receiverUserId);
-      
-      if (receiverUpdateError) throw receiverUpdateError;
-
-      return { receiver: receiver.ign, amount };
+      return { receiver: receiverProfile?.ign || 'User', amount };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
