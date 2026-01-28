@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
@@ -10,139 +10,7 @@ export function useGamingAccounts() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Listen for Epic OAuth callback messages
-  useEffect(() => {
-    const handleMessage = async (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      
-      if (event.data?.type === 'epic-oauth-callback') {
-        if (event.data.error) {
-          toast({
-            title: "Epic Games connection failed",
-            description: event.data.error,
-            variant: "destructive",
-          });
-          setIsConnecting(null);
-          return;
-        }
-
-        if (event.data.code) {
-          try {
-            const session = await supabase.auth.getSession();
-            if (!session.data.session) {
-              throw new Error('Not logged in');
-            }
-
-            // Exchange code for account info
-            const response = await fetch(
-              `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gaming-oauth?action=epic-callback`,
-              {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${session.data.session.access_token}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ code: event.data.code }),
-              }
-            );
-
-            const data = await response.json();
-            
-            if (data.error) {
-              throw new Error(data.error);
-            }
-
-            toast({
-              title: "Epic Games connected!",
-              description: `Linked as ${data.displayName || data.accountId}`,
-            });
-
-            queryClient.invalidateQueries({ queryKey: ['profile'] });
-          } catch (error) {
-            console.error('Epic OAuth callback error:', error);
-            toast({
-              title: "Connection failed",
-              description: error instanceof Error ? error.message : 'Failed to connect Epic Games',
-              variant: "destructive",
-            });
-          }
-          setIsConnecting(null);
-        }
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [toast, queryClient]);
-
-  const connectEpicGames = async () => {
-    setIsConnecting('epic');
-    
-    try {
-      const session = await supabase.auth.getSession();
-      if (!session.data.session) {
-        toast({
-          title: "Not logged in",
-          description: "Please log in to connect your Epic Games account.",
-          variant: "destructive",
-        });
-        setIsConnecting(null);
-        return;
-      }
-
-      // Get Epic OAuth URL from edge function
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gaming-oauth?action=epic-auth-url`,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${session.data.session.access_token}`,
-          },
-        }
-      );
-
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      if (data.authUrl) {
-        // Store state for verification
-        sessionStorage.setItem('epic_oauth_state', data.state);
-        
-        // Open popup for Epic OAuth
-        const width = 600;
-        const height = 700;
-        const left = window.screenX + (window.outerWidth - width) / 2;
-        const top = window.screenY + (window.outerHeight - height) / 2;
-        
-        window.open(
-          data.authUrl,
-          'Epic Games Login',
-          `width=${width},height=${height},left=${left},top=${top}`
-        );
-      } else {
-        throw new Error('Failed to get Epic auth URL');
-      }
-    } catch (error) {
-      console.error('Epic OAuth error:', error);
-      toast({
-        title: "Connection failed",
-        description: error instanceof Error ? error.message : 'Failed to start Epic Games login',
-        variant: "destructive",
-      });
-      setIsConnecting(null);
-    }
-  };
-
   const connectAccount = async (platform: GamingPlatform, username: string) => {
-    // For Epic Games, use OAuth flow instead
-    if (platform === 'epic') {
-      await connectEpicGames();
-      return true;
-    }
-
     setIsConnecting(platform);
     try {
       const session = await supabase.auth.getSession();
@@ -156,22 +24,58 @@ export function useGamingAccounts() {
         return false;
       }
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gaming-oauth?action=manual-link`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.data.session.access_token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ platform, username }),
-        }
-      );
+      // Validate username
+      const sanitizedUsername = username.trim().slice(0, 50);
+      if (!sanitizedUsername || sanitizedUsername.length < 2) {
+        toast({
+          title: "Invalid username",
+          description: "Please enter a valid username (at least 2 characters).",
+          variant: "destructive",
+        });
+        setIsConnecting(null);
+        return false;
+      }
 
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
+      // For Epic Games, verify the username works by fetching stats first
+      if (platform === 'epic') {
+        try {
+          const response = await supabase.functions.invoke('fetch-fortnite-stats', {
+            body: { username: sanitizedUsername },
+          });
+
+          if (response.error) {
+            throw new Error(response.error.message || 'Failed to verify username');
+          }
+
+          if (response.data?.error) {
+            throw new Error(response.data.error);
+          }
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Failed to verify Fortnite username';
+          toast({
+            title: "Verification failed",
+            description: errorMessage,
+            variant: "destructive",
+          });
+          setIsConnecting(null);
+          return false;
+        }
+      }
+
+      // Save the username to profile
+      const columnMap: Record<GamingPlatform, string> = {
+        epic: 'epic_games_id',
+        steam: 'steam_id',
+        riot: 'riot_id',
+      };
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ [columnMap[platform]]: sanitizedUsername })
+        .eq('user_id', session.data.session.user.id);
+
+      if (updateError) {
+        throw updateError;
       }
 
       const platformNames: Record<GamingPlatform, string> = {
@@ -182,10 +86,11 @@ export function useGamingAccounts() {
 
       toast({
         title: `${platformNames[platform]} connected!`,
-        description: `Linked as ${username}`,
+        description: `Linked as ${sanitizedUsername}`,
       });
 
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['fortnite-stats'] });
       setIsConnecting(null);
       return true;
 
@@ -209,22 +114,20 @@ export function useGamingAccounts() {
         throw new Error('Not logged in');
       }
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gaming-oauth?action=unlink`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.data.session.access_token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ platform }),
-        }
-      );
+      const columnMap: Record<string, string> = {
+        epic: 'epic_games_id',
+        steam: 'steam_id',
+        riot: 'riot_id',
+        discord: 'discord_id',
+      };
 
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
+      const { error } = await supabase
+        .from('profiles')
+        .update({ [columnMap[platform]]: null })
+        .eq('user_id', session.data.session.user.id);
+
+      if (error) {
+        throw error;
       }
 
       toast({
@@ -233,6 +136,7 @@ export function useGamingAccounts() {
       });
 
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['fortnite-stats'] });
 
     } catch (error: unknown) {
       console.error('Gaming disconnect error:', error);
@@ -247,7 +151,6 @@ export function useGamingAccounts() {
 
   return {
     connectAccount,
-    connectEpicGames,
     disconnectAccount,
     isConnecting,
   };

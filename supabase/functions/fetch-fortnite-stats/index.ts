@@ -37,114 +37,80 @@ serve(async (req) => {
       throw new Error("Username is required");
     }
 
-    const apiKey = Deno.env.get("FORTNITE_API_KEY");
-    
-    if (!apiKey) {
-      // Return mock data if no API key configured
-      console.log("No FORTNITE_API_KEY configured, returning sample data");
-      return new Response(JSON.stringify({
-        account: {
-          name: username,
-        },
-        stats: {
-          all: {
-            overall: {
-              wins: Math.floor(Math.random() * 500),
-              kills: Math.floor(Math.random() * 10000),
-              deaths: Math.floor(Math.random() * 8000),
-              kd: parseFloat((Math.random() * 3 + 0.5).toFixed(2)),
-              matches: Math.floor(Math.random() * 5000),
-              winRate: parseFloat((Math.random() * 15).toFixed(1)),
-              minutesPlayed: Math.floor(Math.random() * 50000),
-              top5: Math.floor(Math.random() * 1000),
-              top10: Math.floor(Math.random() * 1500),
-              top25: Math.floor(Math.random() * 2000),
-            },
-            solo: {
-              wins: Math.floor(Math.random() * 200),
-              kills: Math.floor(Math.random() * 3000),
-              kd: parseFloat((Math.random() * 2.5).toFixed(2)),
-              matches: Math.floor(Math.random() * 2000),
-            },
-            duo: {
-              wins: Math.floor(Math.random() * 150),
-              kills: Math.floor(Math.random() * 3500),
-              kd: parseFloat((Math.random() * 3).toFixed(2)),
-              matches: Math.floor(Math.random() * 1500),
-            },
-            squad: {
-              wins: Math.floor(Math.random() * 150),
-              kills: Math.floor(Math.random() * 3500),
-              kd: parseFloat((Math.random() * 3.5).toFixed(2)),
-              matches: Math.floor(Math.random() * 1500),
-            },
-          },
-        },
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      });
+    // Validate username format (basic sanitization)
+    const sanitizedUsername = username.trim().slice(0, 50);
+    if (!sanitizedUsername || sanitizedUsername.length < 2) {
+      throw new Error("Invalid username");
     }
 
-    // Call fortniteapi.io for real stats
+    // Use Fortnite-API.com - completely free, no API key needed for stats
+    // Documentation: https://fortnite-api.com/documentation
     const response = await fetch(
-      `https://fortniteapi.io/v1/stats?username=${encodeURIComponent(username)}`,
+      `https://fortnite-api.com/v2/stats/br/v2?name=${encodeURIComponent(sanitizedUsername)}`,
       {
         headers: {
-          "Authorization": apiKey,
+          "User-Agent": "FusedUP-App/1.0",
         },
       }
     );
 
-    if (!response.ok) {
-      console.error("Fortnite API error:", response.status, await response.text());
-      throw new Error("Failed to fetch Fortnite stats");
-    }
-
     const data = await response.json();
 
-    if (!data.result) {
-      throw new Error("Player not found or profile is private");
+    // Handle API errors
+    if (data.status !== 200) {
+      if (data.status === 404) {
+        throw new Error("Player not found. Make sure the username is correct and the profile is public.");
+      }
+      if (data.status === 403) {
+        throw new Error("This player's stats are private.");
+      }
+      console.error("Fortnite API error:", data);
+      throw new Error(data.error || "Failed to fetch Fortnite stats");
     }
+
+    const stats = data.data;
 
     // Transform the API response to our format
     const transformedStats = {
       account: {
-        name: data.name || username,
-        level: data.account?.level,
+        name: stats.account?.name || sanitizedUsername,
+        id: stats.account?.id,
       },
-      battlePass: data.battlePass,
+      battlePass: stats.battlePass ? {
+        level: stats.battlePass.level,
+        progress: stats.battlePass.progress,
+      } : null,
       stats: {
         all: {
-          overall: data.global_stats ? {
-            wins: data.global_stats.squad?.placetop1 + data.global_stats.duo?.placetop1 + data.global_stats.solo?.placetop1 || 0,
-            kills: data.global_stats.squad?.kills + data.global_stats.duo?.kills + data.global_stats.solo?.kills || 0,
-            deaths: data.global_stats.squad?.deaths + data.global_stats.duo?.deaths + data.global_stats.solo?.deaths || 0,
-            kd: data.global_stats.squad?.kd || 0,
-            matches: data.global_stats.squad?.matchesplayed + data.global_stats.duo?.matchesplayed + data.global_stats.solo?.matchesplayed || 0,
-            winRate: data.global_stats.winrate || 0,
-            minutesPlayed: data.global_stats.squad?.minutesplayed + data.global_stats.duo?.minutesplayed + data.global_stats.solo?.minutesplayed || 0,
-            top5: data.global_stats.squad?.placetop5 + data.global_stats.duo?.placetop5 + data.global_stats.solo?.placetop5 || 0,
-            top10: data.global_stats.squad?.placetop10 + data.global_stats.duo?.placetop10 + data.global_stats.solo?.placetop10 || 0,
-            top25: data.global_stats.squad?.placetop25 + data.global_stats.duo?.placetop25 + data.global_stats.solo?.placetop25 || 0,
+          overall: stats.stats?.all?.overall ? {
+            wins: stats.stats.all.overall.wins || 0,
+            kills: stats.stats.all.overall.kills || 0,
+            deaths: stats.stats.all.overall.deaths || 0,
+            kd: stats.stats.all.overall.kd || 0,
+            matches: stats.stats.all.overall.matches || 0,
+            winRate: stats.stats.all.overall.winRate || 0,
+            minutesPlayed: stats.stats.all.overall.minutesPlayed || 0,
+            top5: stats.stats.all.overall.top5 || 0,
+            top10: stats.stats.all.overall.top10 || 0,
+            top25: stats.stats.all.overall.top25 || 0,
           } : null,
-          solo: data.global_stats?.solo ? {
-            wins: data.global_stats.solo.placetop1 || 0,
-            kills: data.global_stats.solo.kills || 0,
-            kd: data.global_stats.solo.kd || 0,
-            matches: data.global_stats.solo.matchesplayed || 0,
+          solo: stats.stats?.all?.solo ? {
+            wins: stats.stats.all.solo.wins || 0,
+            kills: stats.stats.all.solo.kills || 0,
+            kd: stats.stats.all.solo.kd || 0,
+            matches: stats.stats.all.solo.matches || 0,
           } : null,
-          duo: data.global_stats?.duo ? {
-            wins: data.global_stats.duo.placetop1 || 0,
-            kills: data.global_stats.duo.kills || 0,
-            kd: data.global_stats.duo.kd || 0,
-            matches: data.global_stats.duo.matchesplayed || 0,
+          duo: stats.stats?.all?.duo ? {
+            wins: stats.stats.all.duo.wins || 0,
+            kills: stats.stats.all.duo.kills || 0,
+            kd: stats.stats.all.duo.kd || 0,
+            matches: stats.stats.all.duo.matches || 0,
           } : null,
-          squad: data.global_stats?.squad ? {
-            wins: data.global_stats.squad.placetop1 || 0,
-            kills: data.global_stats.squad.kills || 0,
-            kd: data.global_stats.squad.kd || 0,
-            matches: data.global_stats.squad.matchesplayed || 0,
+          squad: stats.stats?.all?.squad ? {
+            wins: stats.stats.all.squad.wins || 0,
+            kills: stats.stats.all.squad.kills || 0,
+            kd: stats.stats.all.squad.kd || 0,
+            matches: stats.stats.all.squad.matches || 0,
           } : null,
         },
       },

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,8 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, ExternalLink } from 'lucide-react';
-import { useGamingAccounts } from '@/hooks/useGamingAccounts';
+import { Loader2, Info } from 'lucide-react';
 
 interface GamingConnectionModalProps {
   isOpen: boolean;
@@ -25,23 +24,23 @@ const platformConfig = {
   epic: {
     name: 'Epic Games',
     placeholder: 'Enter your Epic Games username',
-    description: 'Link your Epic Games account to show your Fortnite stats.',
+    description: 'Link your Epic Games username to show your Fortnite stats on your profile.',
     inputLabel: 'Epic Games Username',
-    useOAuth: true,
+    helpText: 'Make sure your Fortnite stats are set to public in your Epic Games privacy settings.',
   },
   steam: {
     name: 'Steam',
     placeholder: 'Enter your Steam username or profile URL',
     description: 'Link your Steam account to display your gaming library.',
     inputLabel: 'Steam Username or Profile URL',
-    useOAuth: false,
+    helpText: null,
   },
   riot: {
     name: 'Riot Games',
     placeholder: 'Username#TAG (e.g., Player#NA1)',
     description: 'Link your Riot ID to show your Valorant/LoL stats.',
     inputLabel: 'Riot ID',
-    useOAuth: false,
+    helpText: null,
   },
 };
 
@@ -54,14 +53,6 @@ export default function GamingConnectionModal({
 }: GamingConnectionModalProps) {
   const [username, setUsername] = useState('');
   const config = platformConfig[platform];
-  const { connectEpicGames, isConnecting } = useGamingAccounts();
-
-  // Close modal when Epic OAuth completes
-  useEffect(() => {
-    if (platform === 'epic' && !isConnecting && isOpen) {
-      // Modal stays open during OAuth, closes after success/failure via parent
-    }
-  }, [isConnecting, platform, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,56 +65,6 @@ export default function GamingConnectionModal({
     }
   };
 
-  const handleEpicOAuth = async () => {
-    await connectEpicGames();
-    // Modal will close via parent component after OAuth completes
-    onClose();
-  };
-
-  const epicLoading = isConnecting === 'epic';
-
-  // For Epic Games, show OAuth button instead of input
-  if (platform === 'epic' && config.useOAuth) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md glass border-fused-purple/20">
-          <DialogHeader>
-            <DialogTitle>Connect {config.name}</DialogTitle>
-            <DialogDescription>{config.description}</DialogDescription>
-          </DialogHeader>
-          <div className="py-6">
-            <p className="text-sm text-muted-foreground mb-4">
-              Sign in with your Epic Games account to automatically link it and display your Fortnite stats.
-            </p>
-            <Button 
-              onClick={handleEpicOAuth} 
-              disabled={epicLoading}
-              className="w-full bg-[#313131] hover:bg-[#414141] text-white"
-            >
-              {epicLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Connecting...
-                </>
-              ) : (
-                <>
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Sign in with Epic Games
-                </>
-              )}
-            </Button>
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} disabled={epicLoading}>
-              Cancel
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  // For other platforms, use manual input
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md glass border-fused-purple/20">
@@ -142,8 +83,15 @@ export default function GamingConnectionModal({
                 placeholder={config.placeholder}
                 className="bg-white/5"
                 disabled={isLoading}
+                maxLength={50}
               />
             </div>
+            {config.helpText && (
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20">
+                <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-muted-foreground">{config.helpText}</p>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
