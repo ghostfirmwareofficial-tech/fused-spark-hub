@@ -614,4 +614,211 @@
       transform: translateY(-10px) rotateX(2deg) rotateY(2deg);
     }
   }
+
+  /* ============ ESPORTS DESIGN SYSTEM ============ */
+  
+  /* Hero Title - Aggressive esports typography */
+  .esports-title {
+    @apply font-display font-black tracking-tight uppercase;
+    text-shadow: 
+      0 0 40px hsl(var(--fused-purple) / 0.6),
+      0 4px 20px rgba(0, 0, 0, 0.8);
+  }
+
+  /* Glitch effect for titles */
+  .glitch-text {
+    position: relative;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glitch-text::before {
+    animation: glitch-1 0.3s infinite linear alternate-reverse;
+    color: hsl(var(--fused-blue));
+    z-index: -1;
+  }
+
+  .glitch-text::after {
+    animation: glitch-2 0.3s infinite linear alternate-reverse;
+    color: hsl(var(--fused-purple));
+    z-index: -2;
+  }
+
+  @keyframes glitch-1 {
+    0% { clip-path: inset(20% 0 60% 0); transform: translate(-2px, 2px); }
+    20% { clip-path: inset(10% 0 70% 0); transform: translate(2px, -2px); }
+    40% { clip-path: inset(50% 0 30% 0); transform: translate(-2px, 2px); }
+    60% { clip-path: inset(40% 0 40% 0); transform: translate(2px, -2px); }
+    80% { clip-path: inset(80% 0 10% 0); transform: translate(-2px, 2px); }
+    100% { clip-path: inset(5% 0 85% 0); transform: translate(2px, -2px); }
+  }
+
+  @keyframes glitch-2 {
+    0% { clip-path: inset(60% 0 20% 0); transform: translate(2px, -2px); }
+    20% { clip-path: inset(70% 0 10% 0); transform: translate(-2px, 2px); }
+    40% { clip-path: inset(30% 0 50% 0); transform: translate(2px, -2px); }
+    60% { clip-path: inset(40% 0 40% 0); transform: translate(-2px, 2px); }
+    80% { clip-path: inset(10% 0 80% 0); transform: translate(2px, -2px); }
+    100% { clip-path: inset(85% 0 5% 0); transform: translate(-2px, 2px); }
+  }
+
+  /* Angled clip sections */
+  .clip-angle {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3rem), 0 100%);
+  }
+
+  .clip-angle-reverse {
+    clip-path: polygon(0 0, 100% 3rem, 100% 100%, 0 100%);
+  }
+
+  /* Esports stat card */
+  .stat-card {
+    @apply relative overflow-hidden rounded-xl p-6;
+    background: linear-gradient(
+      135deg,
+      rgba(139, 92, 246, 0.15) 0%,
+      rgba(59, 130, 246, 0.1) 50%,
+      rgba(139, 92, 246, 0.05) 100%
+    );
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(135deg, hsl(var(--fused-purple)), hsl(var(--fused-blue)));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  /* Esports accent border */
+  .accent-border-left {
+    @apply relative;
+  }
+
+  .accent-border-left::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, hsl(var(--fused-purple)), hsl(var(--fused-blue)));
+    border-radius: 2px;
+  }
+
+  /* Power bar animation */
+  .power-bar {
+    @apply h-2 rounded-full overflow-hidden;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .power-bar-fill {
+    @apply h-full rounded-full;
+    background: linear-gradient(90deg, hsl(var(--fused-purple)), hsl(var(--fused-blue)));
+    animation: power-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes power-pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; box-shadow: 0 0 20px hsl(var(--fused-purple) / 0.6); }
+  }
+
+  /* Tournament badge */
+  .tournament-badge {
+    @apply px-4 py-2 rounded-lg font-display font-bold uppercase tracking-wider text-sm;
+    background: linear-gradient(135deg, hsl(var(--fused-purple) / 0.3), hsl(var(--fused-blue) / 0.2));
+    border: 1px solid hsl(var(--fused-purple) / 0.5);
+    box-shadow: 0 0 20px hsl(var(--fused-purple) / 0.3);
+  }
+
+  /* Leaderboard rank styles */
+  .rank-gold {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  }
+
+  .rank-silver {
+    background: linear-gradient(135deg, #C0C0C0 0%, #A0A0A0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .rank-bronze {
+    background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Scan line effect */
+  .scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    );
+    pointer-events: none;
+  }
+
+  /* Animated border */
+  @keyframes border-spin {
+    from { --angle: 0deg; }
+    to { --angle: 360deg; }
+  }
+
+  @property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  .animated-border {
+    position: relative;
+    border-radius: 1rem;
+    animation: border-spin 3s linear infinite;
+  }
+
+  .animated-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--angle),
+      transparent 0deg,
+      hsl(var(--fused-purple)) 90deg,
+      hsl(var(--fused-blue)) 180deg,
+      transparent 360deg
+    );
+    z-index: -1;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    padding: 2px;
+  }
 }
