@@ -222,7 +222,7 @@ export function useTournaments() {
     },
   });
 
-  // Enter tournament
+  // Enter tournament - captures initial stats
   const enterTournament = useMutation({
     mutationFn: async ({ tournamentId, epicGamesId }: { tournamentId: string; epicGamesId: string }) => {
       if (!user || !profile) throw new Error('Not authenticated');
@@ -234,6 +234,22 @@ export function useTournaments() {
       if (profile.fused_points < tournament.entry_fee) {
         throw new Error('Not enough Fused Points');
       }
+
+      // Fetch current Fortnite stats to capture initial values
+      console.log('[enterTournament] Fetching initial stats for:', epicGamesId);
+      const { data: statsData, error: statsError } = await supabase.functions.invoke('fetch-fortnite-stats', {
+        body: { username: epicGamesId, action: 'tournament-entry' },
+      });
+
+      if (statsError) {
+        console.error('[enterTournament] Failed to fetch stats:', statsError);
+        throw new Error('Failed to fetch your Fortnite stats. Make sure your profile is public.');
+      }
+
+      const initialWins = statsData?.stats?.all?.overall?.wins || 0;
+      const initialKills = statsData?.stats?.all?.overall?.kills || 0;
+      
+      console.log('[enterTournament] Initial stats captured - Wins:', initialWins, 'Kills:', initialKills);
       
       // Deduct entry fee from user's points
       const { error: pointsError } = await supabase
@@ -243,7 +259,7 @@ export function useTournaments() {
       
       if (pointsError) throw pointsError;
       
-      // Create entry
+      // Create entry with initial stats
       const { error: entryError } = await supabase
         .from('tournament_entries')
         .insert({
@@ -251,6 +267,11 @@ export function useTournaments() {
           user_id: user.id,
           epic_games_id: epicGamesId,
           entry_paid: true,
+          initial_wins: initialWins,
+          initial_kills: initialKills,
+          current_wins: initialWins,
+          current_kills: initialKills,
+          total_score: 0, // Start at 0, calculated as progress
         });
       
       if (entryError) {
@@ -267,7 +288,7 @@ export function useTournaments() {
       queryClient.invalidateQueries({ queryKey: ['tournament-entries'] });
       queryClient.invalidateQueries({ queryKey: ['user-tournament-entry'] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      toast.success('You have entered the tournament!');
+      toast.success('You have entered the tournament! Your starting stats have been recorded.');
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -294,6 +315,68 @@ export function useTournaments() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tournament-entries'] });
+    },
+  });
+
+  // Refresh user's own stats (manual refresh by player)
+  const refreshMyStats = useMutation({
+    mutationFn: async ({ entryId, epicGamesId }: { entryId: string; epicGamesId: string }) => {
+      if (!user) throw new Error('Not authenticated');
+
+      console.log('[refreshMyStats] Fetching current stats for:', epicGamesId);
+      
+      // Fetch latest Fortnite stats
+      const { data: statsData, error: statsError } = await supabase.functions.invoke('fetch-fortnite-stats', {
+        body: { username: epicGamesId, action: 'refresh-stats' },
+      });
+
+      if (statsError) {
+        console.error('[refreshMyStats] Failed to fetch stats:', statsError);
+        throw new Error('Failed to fetch your Fortnite stats. Make sure your profile is public.');
+      }
+
+      const currentWins = statsData?.stats?.all?.overall?.wins || 0;
+      const currentKills = statsData?.stats?.all?.overall?.kills || 0;
+
+      console.log('[refreshMyStats] Current stats - Wins:', currentWins, 'Kills:', currentKills);
+
+      // Get the entry to calculate progress
+      const { data: entry, error: entryError } = await supabase
+        .from('tournament_entries')
+        .select('initial_wins, initial_kills')
+        .eq('id', entryId)
+        .single();
+
+      if (entryError || !entry) throw new Error('Entry not found');
+
+      // Calculate score: (wins gained * 100) + (kills gained * 10)
+      const winsGained = Math.max(0, currentWins - (entry.initial_wins || 0));
+      const killsGained = Math.max(0, currentKills - (entry.initial_kills || 0));
+      const totalScore = (winsGained * 100) + (killsGained * 10);
+
+      console.log('[refreshMyStats] Score calculation - Wins gained:', winsGained, 'Kills gained:', killsGained, 'Total:', totalScore);
+
+      // Update the entry
+      const { error: updateError } = await supabase
+        .from('tournament_entries')
+        .update({
+          current_wins: currentWins,
+          current_kills: currentKills,
+          total_score: totalScore,
+        })
+        .eq('id', entryId);
+
+      if (updateError) throw updateError;
+
+      return { winsGained, killsGained, totalScore };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['tournament-entries'] });
+      queryClient.invalidateQueries({ queryKey: ['user-tournament-entry'] });
+      toast.success(`Stats updated! +${data.winsGained} wins, +${data.killsGained} kills = ${data.totalScore} pts`);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
     },
   });
 
@@ -427,6 +510,7 @@ export function useTournaments() {
     deleteTournament,
     enterTournament,
     updateEntryStats,
+    refreshMyStats,
     finalizeTournament,
     markPayout,
   };
