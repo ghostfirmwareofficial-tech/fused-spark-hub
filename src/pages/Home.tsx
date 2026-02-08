@@ -107,7 +107,7 @@ export default function Home() {
               duration: 0.8
             }} className="max-w-3xl">
                 <h1 className="esports-title text-6xl md:text-8xl lg:text-9xl leading-[0.85] mb-8">
-                  <span className="text-foreground block">FUSED UP
+                  <span className="text-foreground block">FUSED
                 </span>
                   <span className="gradient-text glow-text glitch-text block" data-text="CHAMPIONS">ESPORTS
                 </span>
