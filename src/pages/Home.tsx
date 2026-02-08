@@ -11,69 +11,85 @@ import profile3 from '@/assets/profile-3.png';
 // Partner logos
 import redragonLogo from '@/assets/redragon-logo.png';
 import epomakerLogo from '@/assets/epomaker-logo.png';
-
-const teamMembers = [
-  { name: 'FusedUp', role: 'Team', avatar: profile1 },
-  { name: 'Member', role: 'Player', avatar: profile2 },
-  { name: 'Elite', role: 'Pro', avatar: profile3 },
-];
-
-const partners = [
-  {
-    name: 'Redragon',
-    logo: redragonLogo,
-    url: 'https://redragonshop.com/?aff=6399',
-    code: 'FusedUp',
-    description: 'Premium gaming peripherals - keyboards, mice & headsets',
-  },
-  {
-    name: 'Epomaker',
-    logo: epomakerLogo,
-    url: 'https://epomaker.com/?sca_ref=10502130.4JjKHc6UKU',
-    code: 'FusedUp',
-    description: 'Custom mechanical keyboards & accessories',
-  },
-];
-
-const teamTiers = [
-  { name: 'Amateur', prRange: '0-49 PR', icon: Star, color: 'from-gray-400 to-gray-600', description: 'Starting point for aspiring competitors' },
-  { name: 'Semi-Pro', prRange: '50-99 PR', icon: Flame, color: 'from-primary to-fused-blue', description: 'Proven grinders ready for more' },
-  { name: 'Pro', prRange: '100+ PR', icon: Crown, color: 'from-yellow-400 to-amber-500', description: 'Elite players representing Fused Up' },
-];
-
+const teamMembers = [{
+  name: 'FusedUp',
+  role: 'Team',
+  avatar: profile1
+}, {
+  name: 'Member',
+  role: 'Player',
+  avatar: profile2
+}, {
+  name: 'Elite',
+  role: 'Pro',
+  avatar: profile3
+}];
+const partners = [{
+  name: 'Redragon',
+  logo: redragonLogo,
+  url: 'https://redragonshop.com/?aff=6399',
+  code: 'FusedUp',
+  description: 'Premium gaming peripherals - keyboards, mice & headsets'
+}, {
+  name: 'Epomaker',
+  logo: epomakerLogo,
+  url: 'https://epomaker.com/?sca_ref=10502130.4JjKHc6UKU',
+  code: 'FusedUp',
+  description: 'Custom mechanical keyboards & accessories'
+}];
+const teamTiers = [{
+  name: 'Amateur',
+  prRange: '0-49 PR',
+  icon: Star,
+  color: 'from-gray-400 to-gray-600',
+  description: 'Starting point for aspiring competitors'
+}, {
+  name: 'Semi-Pro',
+  prRange: '50-99 PR',
+  icon: Flame,
+  color: 'from-primary to-fused-blue',
+  description: 'Proven grinders ready for more'
+}, {
+  name: 'Pro',
+  prRange: '100+ PR',
+  icon: Crown,
+  color: 'from-yellow-400 to-amber-500',
+  description: 'Elite players representing Fused Up'
+}];
 export default function Home() {
-  return (
-    <div className="relative">
+  return <div className="relative">
       {/* Hero Section - Aggressive Esports Design */}
       <section className="min-h-[calc(100vh-100px)] relative px-4 lg:px-8 py-4 flex items-center overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-fused-purple/20 blur-[120px] animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-fused-blue/15 blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-fused-blue/15 blur-[100px] animate-pulse" style={{
+          animationDelay: '1s'
+        }} />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-fused-violet/10 blur-[150px]" />
         </div>
 
         {/* Grid overlay */}
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(hsl(var(--fused-purple) / 0.3) 1px, transparent 1px),
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `linear-gradient(hsl(var(--fused-purple) / 0.3) 1px, transparent 1px),
                               linear-gradient(90deg, hsl(var(--fused-purple) / 0.3) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
-          }}
-        />
+        backgroundSize: '60px 60px'
+      }} />
 
         <div className="glass-container w-full p-8 lg:p-12 relative scanlines">
           <div className="grid lg:grid-cols-[1fr,400px] gap-8">
             {/* Main Content */}
             <div className="flex flex-col justify-center py-8">
               {/* Badge */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="mb-6"
-              >
+              <motion.div initial={{
+              opacity: 0,
+              y: 20
+            }} animate={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              duration: 0.5
+            }} className="mb-6">
                 <span className="tournament-badge inline-flex items-center gap-2">
                   <Gamepad2 className="w-4 h-4" />
                   Fortnite Esports Organization
@@ -81,20 +97,20 @@ export default function Home() {
               </motion.div>
 
               {/* Hero Text */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="max-w-3xl"
-              >
+              <motion.div initial={{
+              opacity: 0,
+              y: 30
+            }} animate={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              duration: 0.8
+            }} className="max-w-3xl">
                 <h1 className="esports-title text-6xl md:text-8xl lg:text-9xl leading-[0.85] mb-8">
-                  <span className="text-foreground block">WE BUILD</span>
-                  <span 
-                    className="gradient-text glow-text glitch-text block" 
-                    data-text="CHAMPIONS"
-                  >
-                    CHAMPIONS
-                  </span>
+                  <span className="text-foreground block">FUSED UP
+                </span>
+                  <span className="gradient-text glow-text glitch-text block" data-text="CHAMPIONS">ESPORTS
+                </span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mb-10 leading-relaxed font-medium">
@@ -104,21 +120,14 @@ export default function Home() {
 
                 <div className="flex flex-wrap gap-4">
                   <Link to="/tournaments">
-                    <Button 
-                      size="lg" 
-                      className="rounded-lg px-8 py-7 text-lg font-display font-bold uppercase tracking-wide bg-gradient-to-r from-fused-purple to-fused-blue hover:opacity-90 group shadow-xl shadow-fused-purple/25 border-0"
-                    >
+                    <Button size="lg" className="rounded-lg px-8 py-7 text-lg font-display font-bold uppercase tracking-wide bg-gradient-to-r from-fused-purple to-fused-blue hover:opacity-90 group shadow-xl shadow-fused-purple/25 border-0">
                       <Trophy className="w-5 h-5 mr-2" />
                       Enter Tournament
                       <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
                   <Link to="/apply">
-                    <Button 
-                      size="lg" 
-                      variant="outline" 
-                      className="rounded-lg px-8 py-7 text-lg font-display font-bold uppercase tracking-wide border-2 border-primary/50 hover:bg-primary/10 hover:border-primary"
-                    >
+                    <Button size="lg" variant="outline" className="rounded-lg px-8 py-7 text-lg font-display font-bold uppercase tracking-wide border-2 border-primary/50 hover:bg-primary/10 hover:border-primary">
                       <Swords className="w-5 h-5 mr-2" />
                       Join Team
                     </Button>
@@ -127,36 +136,47 @@ export default function Home() {
               </motion.div>
 
               {/* Stats Row */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-                className="mt-12 flex flex-wrap gap-8"
-              >
-                {[
-                  { value: '$500+', label: 'PRIZES WON' },
-                  { value: '50+', label: 'ACTIVE PLAYERS' },
-                  { value: '12', label: 'TOURNAMENT WINS' },
-                ].map((stat, index) => (
-                  <div key={stat.label} className="accent-border-left pl-4">
+              <motion.div initial={{
+              opacity: 0,
+              y: 20
+            }} animate={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              delay: 0.5,
+              duration: 0.6
+            }} className="mt-12 flex flex-wrap gap-8">
+                {[{
+                value: '$500+',
+                label: 'PRIZES WON'
+              }, {
+                value: '50+',
+                label: 'ACTIVE PLAYERS'
+              }, {
+                value: '12',
+                label: 'TOURNAMENT WINS'
+              }].map((stat, index) => <div key={stat.label} className="accent-border-left pl-4">
                     <div className="text-3xl md:text-4xl font-display font-black text-foreground">
                       {stat.value}
                     </div>
                     <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                       {stat.label}
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </motion.div>
             </div>
 
             {/* Right Sidebar Info */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex flex-col gap-5"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            x: 30
+          }} animate={{
+            opacity: 1,
+            x: 0
+          }} transition={{
+            duration: 0.8,
+            delay: 0.3
+          }} className="flex flex-col gap-5">
               {/* Live Tournament Card */}
               <div className="stat-card">
                 <div className="flex items-center gap-2 mb-3">
@@ -168,7 +188,9 @@ export default function Home() {
                   Compete in Fortnite Ranked for real money prizes
                 </p>
                 <div className="power-bar mb-3">
-                  <div className="power-bar-fill" style={{ width: '65%' }} />
+                  <div className="power-bar-fill" style={{
+                  width: '65%'
+                }} />
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Prize Pool: $25+</span>
@@ -180,15 +202,11 @@ export default function Home() {
               <div className="stat-card">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex -space-x-3">
-                    {teamMembers.map((member, index) => (
-                      <div
-                        key={member.name}
-                        className="w-12 h-12 rounded-full border-3 border-background bg-muted overflow-hidden ring-2 ring-fused-purple/30"
-                        style={{ zIndex: teamMembers.length - index }}
-                      >
+                    {teamMembers.map((member, index) => <div key={member.name} className="w-12 h-12 rounded-full border-3 border-background bg-muted overflow-hidden ring-2 ring-fused-purple/30" style={{
+                    zIndex: teamMembers.length - index
+                  }}>
                         <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                   <span className="text-sm font-semibold ml-2">+50 Members</span>
                 </div>
@@ -225,17 +243,19 @@ export default function Home() {
           </div>
 
           {/* Scroll Indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2"
-          >
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="flex flex-col items-center gap-2 text-muted-foreground"
-            >
+          <motion.div initial={{
+          opacity: 0
+        }} animate={{
+          opacity: 1
+        }} transition={{
+          delay: 1.5
+        }} className="absolute bottom-6 left-1/2 -translate-x-1/2">
+            <motion.div animate={{
+            y: [0, 8, 0]
+          }} transition={{
+            duration: 2,
+            repeat: Infinity
+          }} className="flex flex-col items-center gap-2 text-muted-foreground">
               <span className="text-xs uppercase tracking-[0.2em] font-semibold">Scroll</span>
               <ChevronDown className="w-5 h-5" />
             </motion.div>
@@ -246,12 +266,15 @@ export default function Home() {
       {/* Features Section */}
       <section className="py-24 px-4 lg:px-8 relative">
         <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} className="text-center mb-16">
             <h2 className="esports-title text-5xl md:text-6xl mb-4">
               WHY <span className="gradient-text">FUSED UP</span>?
             </h2>
@@ -261,18 +284,29 @@ export default function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { icon: Trophy, title: 'COMPETE & RISE', description: 'Join our competitive roster and prove your skills in tournaments.' },
-              { icon: Users, title: 'COMMUNITY FIRST', description: 'Connect with fellow gamers, share highlights, and grow together.' },
-              { icon: Zap, title: 'EARN REWARDS', description: 'Gain Fused Points through activity and unlock exclusive items.' },
-            ].map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
+            {[{
+            icon: Trophy,
+            title: 'COMPETE & RISE',
+            description: 'Join our competitive roster and prove your skills in tournaments.'
+          }, {
+            icon: Users,
+            title: 'COMMUNITY FIRST',
+            description: 'Connect with fellow gamers, share highlights, and grow together.'
+          }, {
+            icon: Zap,
+            title: 'EARN REWARDS',
+            description: 'Gain Fused Points through activity and unlock exclusive items.'
+          }].map((feature, index) => <motion.div key={feature.title} initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            delay: index * 0.1
+          }}>
                 <div className="stat-card h-full hover:scale-[1.02] transition-transform duration-300">
                   <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-fused-purple to-fused-blue flex items-center justify-center mb-6 shadow-lg shadow-fused-purple/30">
                     <feature.icon className="w-8 h-8 text-white" />
@@ -280,8 +314,7 @@ export default function Home() {
                   <h3 className="font-display font-bold text-xl mb-3 uppercase tracking-wide">{feature.title}</h3>
                   <p className="text-muted-foreground">{feature.description}</p>
                 </div>
-              </motion.div>
-            ))}
+              </motion.div>)}
           </div>
         </div>
       </section>
@@ -289,12 +322,15 @@ export default function Home() {
       {/* Team Tiers Section */}
       <section className="py-24 px-4 lg:px-8">
         <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} className="text-center mb-16">
             <h2 className="esports-title text-5xl md:text-6xl mb-4">
               COMPETITIVE <span className="gradient-text">TIERS</span>
             </h2>
@@ -304,14 +340,17 @@ export default function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {teamTiers.map((tier, index) => (
-              <motion.div
-                key={tier.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
-              >
+            {teamTiers.map((tier, index) => <motion.div key={tier.name} initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            delay: index * 0.15
+          }}>
                 <div className="stat-card text-center h-full hover:scale-[1.02] transition-transform duration-300">
                   <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${tier.color} mx-auto mb-6 flex items-center justify-center shadow-xl`}>
                     <tier.icon className="w-12 h-12 text-white" />
@@ -322,8 +361,7 @@ export default function Home() {
                   </p>
                   <p className="text-muted-foreground">{tier.description}</p>
                 </div>
-              </motion.div>
-            ))}
+              </motion.div>)}
           </div>
         </div>
       </section>
@@ -331,12 +369,15 @@ export default function Home() {
       {/* Partners Section */}
       <section className="py-24 px-4 lg:px-8">
         <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} className="text-center mb-16">
             <h2 className="esports-title text-5xl md:text-6xl mb-4">
               OUR <span className="gradient-text">PARTNERS</span>
             </h2>
@@ -346,14 +387,17 @@ export default function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {partners.map((partner, index) => (
-              <motion.div
-                key={partner.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
-              >
+            {partners.map((partner, index) => <motion.div key={partner.name} initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            delay: index * 0.15
+          }}>
                 <div className="stat-card h-full hover:scale-[1.01] transition-transform duration-300">
                   <div className="flex flex-col items-center gap-4">
                     <div className="relative w-full h-32 rounded-lg overflow-hidden bg-white/5">
@@ -371,16 +415,19 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            ))}
+              </motion.div>)}
           </div>
 
           {/* DUBBY Partner */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }}>
             <div className="stat-card p-8 md:p-12">
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="flex-shrink-0 relative">
@@ -420,16 +467,10 @@ export default function Home() {
             </div>
 
             <div className="flex flex-wrap justify-center gap-6">
-              {['Discord', 'YouTube', 'Twitter', 'TikTok', 'Instagram'].map((social) => (
-                <a
-                  key={social}
-                  href="#"
-                  className="text-muted-foreground hover:text-primary transition-colors relative group font-semibold uppercase text-sm tracking-wide"
-                >
+              {['Discord', 'YouTube', 'Twitter', 'TikTok', 'Instagram'].map(social => <a key={social} href="#" className="text-muted-foreground hover:text-primary transition-colors relative group font-semibold uppercase text-sm tracking-wide">
                   {social}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-fused-purple to-fused-blue group-hover:w-full transition-all duration-300" />
-                </a>
-              ))}
+                </a>)}
             </div>
 
             <p className="text-muted-foreground text-sm">
@@ -438,6 +479,5 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 }
