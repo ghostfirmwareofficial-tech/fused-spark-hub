@@ -19,7 +19,7 @@ export default function LeftSidebar() {
       {/* Logo & Brand */}
       <div className="flex flex-col items-center gap-4">
         <Link to="/" className="relative group">
-          <div className="w-12 h-12 rounded-xl bg-card/50 backdrop-blur-sm border border-white/10 flex items-center justify-center overflow-hidden">
+          <div className="w-12 h-12 rounded-2xl glass-card flex items-center justify-center overflow-hidden">
             <img 
               src="/images/fused-logo.png" 
               alt="Fused Up" 
@@ -44,7 +44,7 @@ export default function LeftSidebar() {
         </div>
         
         <p className="vertical-text text-[10px] text-muted-foreground/60 max-w-[180px] leading-relaxed">
-          By reaching out to connect with us, you're taking the first step toward unlocking the full potential of your gaming presence.
+          Clean branding, smarter features, and a better community experience.
         </p>
 
         {/* Social Links */}
@@ -69,7 +69,7 @@ export default function LeftSidebar() {
         to="/apply"
         className="cta-button group"
       >
-        <span className="text-xs font-medium whitespace-nowrap">Let's Transform Your Digital Presence</span>
+        <span className="text-xs font-medium whitespace-nowrap">Apply</span>
         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
           <ArrowRight className="w-4 h-4 text-primary-foreground" />
         </div>

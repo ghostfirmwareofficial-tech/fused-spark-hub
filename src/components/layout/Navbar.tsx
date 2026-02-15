@@ -70,7 +70,7 @@ export default function Navbar() {
   return (
     <>
       <nav className="sticky top-0 z-50 px-4 lg:px-8 py-4">
-        <div className="glass-container p-4">
+        <div className="glass-container p-4 glass-card-hover">
           <div className="flex items-center justify-between">
             {/* Logo - Mobile only */}
             <Link to="/" className="lg:hidden flex items-center gap-2">
@@ -87,7 +87,7 @@ export default function Navbar() {
               <div ref={navContainerRef} className="pill-nav relative">
                 {/* Animated sliding indicator that fits content */}
                 <motion.div
-                  className="absolute top-1 bottom-1 rounded-full bg-primary"
+                  className="absolute top-1 bottom-1 rounded-full bg-gradient-to-r from-primary via-fused-blue to-fused-violet shadow-lg shadow-primary/25"
                   initial={false}
                   animate={{
                     left: indicatorStyle.left,
