@@ -38,6 +38,7 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { useDailyCheckIn } from '@/hooks/useDailyCheckIn';
 import { useDiscordOAuth } from '@/hooks/useDiscordOAuth';
 import { useGamingAccounts } from '@/hooks/useGamingAccounts';
+import { useEpicOAuth } from '@/hooks/useEpicOAuth';
 import { SHOP_ITEMS } from '@/hooks/useShop';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -61,6 +62,7 @@ export default function Profile() {
   const { isAdmin } = useUserRole();
   const { hasCheckedInToday, currentStreak, checkIn } = useDailyCheckIn();
   const { connectDiscord, disconnectDiscord, isConnecting: isDiscordConnecting } = useDiscordOAuth();
+  const { connectEpic, isConnecting: isEpicConnecting } = useEpicOAuth();
   const { connectAccount, disconnectAccount, isConnecting: gamingConnecting } = useGamingAccounts();
   const queryClient = useQueryClient();
   
@@ -71,8 +73,8 @@ export default function Profile() {
   const [showCustomization, setShowCustomization] = useState(false);
   const [connectionModal, setConnectionModal] = useState<{
     isOpen: boolean;
-    platform: 'epic' | 'steam' | 'riot';
-  }>({ isOpen: false, platform: 'epic' });
+    platform: 'steam' | 'riot';
+  }>({ isOpen: false, platform: 'steam' });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Update profile mutation
@@ -132,7 +134,7 @@ export default function Profile() {
     }
   };
 
-  const openConnectionModal = (platform: 'epic' | 'steam' | 'riot') => {
+  const openConnectionModal = (platform: 'steam' | 'riot') => {
     setConnectionModal({ isOpen: true, platform });
   };
 
@@ -365,8 +367,9 @@ export default function Profile() {
                 platform="epic"
                 isConnected={!!profile.epic_games_id}
                 username={profile.epic_games_id || undefined}
-                onConnect={() => openConnectionModal('epic')}
+                onConnect={connectEpic}
                 onDisconnect={() => disconnectAccount('epic')}
+                isLoading={isEpicConnecting}
               />
               <GamingAccountButton
                 platform="steam"

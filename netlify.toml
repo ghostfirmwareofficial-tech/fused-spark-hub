@@ -6,6 +6,14 @@
   NODE_VERSION = "20"
   NPM_FLAGS = "--loglevel=error"
 
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/api/epic/exchange"
+  to = "/.netlify/functions/epic_exchange"
+  status = 200
+
 # SPA routing for react-router
 [[redirects]]
   from = "/*"
